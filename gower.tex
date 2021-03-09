@@ -1,0 +1,222 @@
+\documentclass[]{article}
+\usepackage{amsmath}
+\usepackage[a4paper, total={6in, 8in}]{geometry}
+
+%opening
+\title{Relatório - Medida para ordenar objetos de pior a melhor dados seus atributos}
+
+\date{\vspace{-5ex}}
+%\date{}  % Toggle commenting to test
+
+\begin{document}
+		
+	\maketitle
+		
+	\section{Definição do problema}
+	
+	Como medir a similaridade de dados categóricos ordinais?
+
+	Será utilizada como meio de partida e referência a medida de similaridade de Gower, que é dada pela equação
+	
+	\begin{center}
+		$ S_{ij} = \dfrac{\sum_{k = 1}^N w_{ijk}s_{ijk}}{\sum_{k = 1}^N w_{ijk}} $	
+	\end{center}
+	
+    Ela pode ser aplicada a alguns tipos de variáveis, incluindo as qualitativas e quantitavas.
+	
+	\begin{itemize}
+		\item Qualitativas (variáveis categóricas nominais e ordinais): para as nominais, a função de similaridade $s_{ijk}$ em relação ao atributo $k$ entre o objeto $i$ e $j$ é 1 se $i$ e $j$ concordam em relação ao valor do atributo $k$, e 0 caso contrário.
+		\item Quantitativas (variáveis numéricas discretas e contínuas): para as variáveis com valores
+		$x_1, x_2, ... , x_n$, a função de similaridade é $1 - |x_i - x_j| / R_k$. Sendo $R_k$ o maior valor do intervalo do atributo $k$.
+	\end{itemize}
+
+	Em sua forma mais simples, a similaridade entre variáveis categóricas ordinais poderia ser uma alteração da fórmula das quantitativas, onde $x_i$ seria o ranking atual do atributo $k$ do objeto $i$, $r_{ik}$, e $x_j$, $r_{jk}$, resultando em $1 - |r_{ik} - r_{jk}| / R_k$. Essa solução, entretanto, não resolve o problema proposto completamente, porque ao comparar o objeto $i$ ao $j$, necessita-se de um valor representando o quanto $i$ é acima ou igual a $j$, e não o módulo da diferença.
+	
+	Uma exemplificação poderá ajudar a entender. Uma empresa $E$ abre inscrições para uma vaga de trabalho onde os requisitos consistem em ter uma proficiência avançada em Excel, intermediária em PowerPoint e nada para Word. Supondo que vários candidados aplicaram, como saber qual é o melhor?
+	
+	No decorrer do texto será feito referência a essa exemplificação.
+	
+	\section{Propostas}
+	
+	Quatro propostas para a fórmula de similaridade foram criadas de forma incremental.
+	
+	Todas as propostas trabalham com a transformação textual do nível de proficiência para um valor em uma escala, por exemplo, dado os níveis de proficiência "nada", "básico", "intermediário" e "avançado", atribuí-se um valor entre 1 e 4 para cada nível, resultando em 1 - "nada", 2 - "básico", 3 - "intermediário" e 4 - "avançado".
+	
+	\begin{center}
+		\noindent \textbf{Tabela 1.}
+		\noindent Níveis de proficiência para a vaga da empresa E
+		
+		\begin{tabular}{| c | c |c | c|} 
+			\hline
+			& Excel & PowerPoint & Word \\ [0.5ex] 
+			\hline
+			Empresa E & avançado (4) & intermediário (3) & nada (1) \\
+			\hline
+		\end{tabular}
+	\end{center}
+	
+	\begin{center}
+		\noindent \textbf{Tabela 2.}
+		\noindent Níveis de proficiência dos candidatos A, B e C
+		
+		\begin{tabular}{|c | c | c | c|} 
+			\hline
+			& Excel & PowerPoint & Word \\ [0.5ex] 
+			\hline
+			Candidato A & básico (2) & intermediário (3) & avançado (4) \\
+			\hline
+			Candidato B & avançado (4) & intermediário (3) & básico (2) \\
+			\hline
+			Candidato C & nada (1) & básico (2) & nada (1) \\
+			\hline
+		\end{tabular}
+	\end{center}
+	
+	\subsection{Medida de similaridade}
+	A primeira abordagem consiste na atribuição de 1 ou 0 com base nos rankings de cada objeto de cada atributo e o nível de dificuldade do requisito. Dado o atributo $k$ presente nos objetos $i$ e $j$, e comparando $i$ a $j$ (candidato com empresa), $s_{ijk}$ é definido como
+	
+	\begin{center}
+	$ s_{ijk} = \begin{cases}
+			0, &\text{if } \frac{r_{ik}}{R_k}  {} < \frac{r_{jk}}{R_k} \\
+			1, &\text{if } \frac{r_{ik}}{R_k} \ge \frac{r_{jk}}{R_k} \end{cases} $
+	\end{center}
+
+	\noindent onde $r_{ik}$ é ranking atual do atributo $k$ do objeto $i$ e $R_k$ é o maior valor do intervalo (rank) do atributo $k$.
+	
+	Com essa medida é possível ter um valor de match com a vaga de cada candidato, porém, caso seja necessário escolher o melhor candidado dentre os que deram match, uma outra medida para calcular o conhecimento, ou habilidade, a mais terá que ser definida.
+	
+	\subsection{Medida de habilidade}
+	    Para começar a medir o quanto a mais um candidato sabe, primeiro é calculado o quantidade de habilidade. A função de habilidade é dada por
+	    
+	\begin{center}
+		$ h_{ik}= \dfrac{r_{ik}}{R_k} $
+	\end{center}
+
+	\begin{center}
+		\noindent \textbf{Tabela 3.}
+		\noindent Habilidades dos candidatos A, B e C
+		
+		\begin{tabular}{|c | c | c | c|} 
+			\hline
+			& Excel & PowerPoint & Word \\ [0.5ex] 
+			\hline
+			Candidato A & 2/4 & 3/4 & 4/4 \\
+			\hline
+			Candidato B & 4/4 & 3/4 & 2/4 \\
+			\hline
+			Candidato C & 1/4 & 2/4 & 1/4 \\
+			\hline
+		\end{tabular}
+	\end{center}
+	
+	
+	\begin{center}
+		\noindent \textbf{Tabela 4.}
+		\noindent Habilidades (nível de dificuldade) da empresa E
+		
+		\begin{tabular}{|c | c | c | c|} 
+			\hline
+			& Excel & PowerPoint & Word \\ [0.5ex] 
+			\hline
+			Empresa E & 4/4 & 3/4 & 1/4 \\
+			\hline
+		\end{tabular}
+	\end{center}
+
+	Em relação à empresa, a média das habilidades (requisitos) é o nível de dificuldade da vaga da empresa.
+		
+	\subsection{Medida de mérito - versão 1}
+	Com a função de habilidade definida, é então possível calcular o conhecimento a mais dos candidatos, e essa operação será feita pela função de mérito.
+	
+	Um valor de mérito positivo (entre 0 e 1) significa que o candidato provavelmente deu match em todos os requisitos, e caso contrário, provavelmente não.
+	
+	Nessa primeira versão, a medida é definida pela subtração da média das habilidades do candidato com o nível de dificuldade da empresa - a média das "habilidades" da empresa.
+	
+	\begin{center}
+	$ M_{ij} = M_i - M_j = \dfrac{\sum_{k = 1}^N h_{ik}}{N} - \dfrac{\sum_{k = 1}^N h_{jk}}{N}$
+	\end{center}
+
+    \noindent onde $i$ é o candidato e $j$ é a empresa.
+	
+	\begin{center}
+		\noindent \textbf{Média das habilidades dos candidatos e empresa}
+		
+		Candidato A $\Rightarrow$ $\dfrac{\frac{2}{4} + \frac{3}{4} + \frac{4}{4}}{3} = \dfrac{3}{4}$ \\
+	
+		Candidato B $\Rightarrow$ $\dfrac{\frac{4}{4} + \frac{3}{4} + \frac{2}{4}}{3} = \dfrac{3}{4}$ \\
+	
+		Candidato C $\Rightarrow$ $\dfrac{\frac{1}{4} + \frac{2}{4} + \frac{1}{4}}{3} = \dfrac{1}{3}$ \\
+		
+		Empresa $\Rightarrow$ $\dfrac{\frac{4}{4} + \frac{3}{4} + \frac{1}{4}}{3} = \dfrac{2}{3}$ \\
+	\end{center}
+	
+	
+	\begin{center}
+		\noindent \textbf{Tabela 4.}
+		\noindent Méritos (v1) dos candidatos A, B e C
+		
+		\begin{tabular}{| c | c |} 
+			\hline
+			& Mérito \\ [0.5ex] 
+			\hline
+			Candidato A & 3/4 - 2/3 = 0.083 \\
+			\hline
+			Candidato B & 3/4 - 2/3 = 0.083  \\
+			\hline
+			Candidato C & 1/3 - 2/3 = -0.333 \\
+			\hline
+		\end{tabular}
+	\end{center}
+
+	Essa medida tem uma falha, e é que ao nível do atributo não está sendo feito uma comparação de match. Como a média das habilidades é calculada e depois o nível de dificuldade da empresa subtraído, é possível que um candidato tenha rankings altos em alguns atributos e dar match nestes, mas em outros ter um valor baixo e não dar match, porém com a média, essa informação se perde e ocorre um contrabalanço dos valores. Isso é evidenciado no valor do mérito do Candidato A e B na tabela 4, onde o Candidato A no atributo Excel não deu match mas no atributo Word, sim; e o Candidato B que deu match em Excel e em Word, porém a medida do mérito das duas são iguais. O candidato B deveria ter mais mérito que o A.
+	
+	Um outra medida de mérito é então apresentada para solucionar esse problema.
+
+	\subsection{Medida de mérito - versão 2}
+	
+	Essa medida visa solucionar o problema evidenciado na medida anterior, e faz isso introduzindo um conceito de peso e removendo a comparação das habilidades ao nível de média.
+	
+	Nela, para o mérito de cada atributo, a habilidade do candidato é multiplicada pelo nível de "habilidade" da empresa, denomidado de peso, e esse peso ao quadrado é subtraído depois. Como a média das habilidades do candidato é multiplicada pelo peso do atributo da empresa, o termo subtraído também deve ser multiplicado pelo peso, mas como o peso é igual à habilidade da empresa, esse termo se torna o peso ao quadrado.
+	
+	\begin{center}
+		$ M_{ij} = \dfrac{\sum_{k = 1}^N h_{jk}h_{ik} - h_{jk}^2}{\sum_{k = 1}^N
+			h_{jk}} = \dfrac{\sum_{k = 1}^N w_{ijk}h_{ik} - w_{ijk}^2}{\sum_{k = 1}^N
+			w_{ijk}} $
+	\end{center}
+
+	Esse equação é a mesma de Gower porém com a subtração do peso ao quadrado no numerador.
+	
+		\begin{center}
+		\noindent \textbf{Méritos dos candidatos11}
+		
+		Candidato A $\Rightarrow$ $\dfrac{(\frac{4}{4}\frac{2}{4} - \frac{4}{4}^2)+ (\frac{3}{4}\frac{3}{4} - \frac{3}{4}^2) + (\frac{1}{4}\frac{4}{4} - \frac{1}{4}^2)}{\frac{4}{4} + \frac{3}{4} + \frac{1}{4}} = -0.156$ \\
+		
+		Candidato B $\Rightarrow$ $\dfrac{(\frac{4}{4}\frac{4}{4} - \frac{4}{4}^2)+ (\frac{3}{4}\frac{3}{4} - \frac{3}{4}^2) + (\frac{1}{4}\frac{2}{4} - \frac{1}{4}^2)}{\frac{4}{4} + \frac{3}{4} + \frac{1}{4}} = 0.031$ \\
+		
+		Candidato C $\Rightarrow$ $\dfrac{(\frac{4}{4}\frac{1}{4} - \frac{4}{4}^2)+ (\frac{3}{4}\frac{2}{4} - \frac{3}{4}^2) + (\frac{1}{4}\frac{1}{4} - \frac{1}{4}^2)}{\frac{4}{4} + \frac{3}{4} + \frac{1}{4}} = -0.469$ \\
+	\end{center}
+	
+	
+	\begin{center}
+		\noindent \textbf{Tabela 5.}
+		\noindent Méritos (v2) dos candidatos A, B e C
+		
+		\begin{tabular}{| c | c |} 
+			\hline
+			& Mérito \\ [0.5ex] 
+			\hline
+			Candidato A & -0.156 \\
+			\hline
+			Candidato B & 0.031  \\
+			\hline
+			Candidato C & -0.46875 \\
+			\hline
+		\end{tabular}
+	\end{center}
+	
+	Observa-se que o Candidato A e B não têm méritos iguais, sendo B maior que A. No caso do Candidato C e B, ambos não têm mérito positivo, e assim se entende que não deram match com a maioria dos requisitos ou que os que deram match o peso da empresa é muito baixo para poder influenciar positivamente o resultado final.
+	
+	Na escala de [-1, 0], -1 significa que o candidato não teve match em nenhum requisito e os níveis de proficiência são os menores possíveis, e na medida que o mérito se aproxima de 0, quase ocorreu match em todos os requisitos, porém em alguns não. Na escala de [0, 1], 0 significa que teve match e há o mínimo de nível de proficiência necessário, e na medida que o mérito se aproxima de 1, o candidado tem match e um nível de proficiência muito alto em todos os requisitos.
+	
+\end{document}
+
