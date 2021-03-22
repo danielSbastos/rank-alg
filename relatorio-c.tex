@@ -80,7 +80,8 @@
 	\begin{center}
 		\begin{equation}
 			  \begin{multlined}
-				S_{ij} = \dfrac{\sum_{k = 0}^N \dfrac{r_{ik}\cdot(r_{jk} + 1)}{|L|^2 - |L|} \cdot C^{r_{ik} - (|L| - 1)}}{\sum_{k = 0}^N C^{r_{ik} - (|L| - 1)}} \\
+				S_{ij} = \dfrac{\sum_{k = 0}^N \dfrac{r_{ik}\cdot(r_{jk} + 1)}{|L|^2 - |L|} \cdot C_{jk}^{r_{ik} - (|L| - 1)}}{\sum_{k = 0}^N C_{jk}^{r_{ik} - (|L| - 1)}} \\
+				C_{jk} = 1 + \dfrac{r_{jk}}{|L| - 1} \cdot \bigg(\dfrac{|L| - 1}{|L| - 2} - 1\bigg)
 			  \end{multlined}
 		\end{equation}	
 	\end{center}
