@@ -1,0 +1,308 @@
+%% 
+%% Copyright 2007-2020 Elsevier Ltd
+%% 
+%% This file is part of the 'Elsarticle Bundle'.
+%% ---------------------------------------------
+%% 
+%% It may be distributed under the conditions of the LaTeX Project Public
+%% License, either version 1.2 of this license or (at your option) any
+%% later version.  The latest version of this license is in
+%%    http://www.latex-project.org/lppl.txt
+%% and version 1.2 or later is part of all distributions of LaTeX
+%% version 1999/12/01 or later.
+%% 
+%% The list of all files belonging to the 'Elsarticle Bundle' is
+%% given in the file `manifest.txt'.
+%% 
+
+%% Template article for Elsevier's document class `elsarticle'
+%% with numbered style bibliographic references
+%% SP 2008/03/01
+%%
+%% 
+%%
+%% $Id: elsarticle-template-num.tex 190 2020-11-23 11:12:32Z rishi $
+%%
+%%
+\documentclass[preprint,12pt]{elsarticle}
+\usepackage{xcolor}
+
+%% Use the option review to obtain double line spacing
+%% \documentclass[authoryear,preprint,review,12pt]{elsarticle}
+
+%% Use the options 1p,twocolumn; 3p; 3p,twocolumn; 5p; or 5p,twocolumn
+%% for a journal layout:
+%% \documentclass[final,1p,times]{elsarticle}
+%% \documentclass[final,1p,times,twocolumn]{elsarticle}
+%% \documentclass[final,3p,times]{elsarticle}
+%% \documentclass[final,3p,times,twocolumn]{elsarticle}
+%% \documentclass[final,5p,times]{elsarticle}
+%% \documentclass[final,5p,times,twocolumn]{elsarticle}
+
+%% For including figures, graphicx.sty has been loaded in
+%% elsarticle.cls. If you prefer to use the old commands
+%% please give \usepackage{epsfig}
+
+%% The amssymb package provides various useful mathematical symbols
+\usepackage{amssymb}
+%% The amsthm package provides extended theorem environments
+%% \usepackage{amsthm}
+
+%% The lineno packages adds line numbers. Start line numbering with
+%% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
+%% for the whole article with \linenumbers.
+%% \usepackage{lineno}
+
+%% \journal{Nuclear Physics B}
+
+\begin{document}
+
+\begin{frontmatter}
+
+%% Title, authors and addresses
+
+%% use the tnoteref command within \title for footnotes;
+%% use the tnotetext command for theassociated footnote;
+%% use the fnref command within \author or \address for footnotes;
+%% use the fntext command for theassociated footnote;
+%% use the corref command within \author for corresponding author footnotes;
+%% use the cortext command for theassociated footnote;
+%% use the ead command for the email address,
+%% and the form \ead[url] for the home page:
+%% \title{Title\tnoteref{label1}}
+%% \tnotetext[label1]{}
+%% \author{Name\corref{cor1}\fnref{label2}}
+%% \ead{email address}
+%% \ead[url]{home page}
+%% \fntext[label2]{}
+%% \cortext[cor1]{}
+%% \affiliation{organization={},
+%%             addressline={},
+%%             city={},
+%%             postcode={},
+%%             state={},
+%%             country={}}
+%% \fntext[label3]{}
+
+% \title{Uma nova medida de similaridade para dados categóricos ordinais aplicada ao 
+% ranking de candidatos}
+
+\title{Ranqueamendo de candidatos utilizando uma nova medida de *similaridade* para dados categóricos ordinais}
+
+%% use optional labels to link authors explicitly to addresses:
+%% \author[label1,label2]{}
+%% \affiliation[label1]{organization={},
+%%             addressline={},
+%%             city={},
+%%             postcode={},
+%%             state={},
+%%             country={}}
+%%
+%% \affiliation[label2]{organization={},
+%%             addressline={},
+%%             city={},
+%%             postcode={},
+%%             state={},
+%%             country={}}
+
+\author[inst1]{Daniel S. Bastos}
+\ead{daniel.bastos1272625@sga.pucminas.br}
+
+% \affiliation[inst1]{organization={Department of Computer Science, Pontifical Catholic University of Minas Gerais},
+%             addressline={Av. Dom José Gaspar 500, Coração Eucarístico}, 
+%             city={Belo Horizonte},
+%             postcode={30535-610}, 
+%             state={Minas Gerais},
+%             country={Brazil}}
+
+\affiliation[inst1]{organization={Departamento de Ciência da Computação, Pontifícia Universidade Católica de Minas Gerais},
+            addressline={Av. Dom José Gaspar 500, Coração Eucarístico}, 
+            city={Belo Horizonte},
+            postcode={30535-610}, 
+            state={Minas Gerais},
+            country={Brasil}}
+
+\author[inst1]{Luis E. Zárate}
+\ead{zarate@pucminas.br}
+
+\begin{abstract}
+%% Text of abstract
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+\end{abstract}
+
+%%Graphical abstract
+% \begin{graphicalabstract}
+% \includegraphics{grabs}
+% \end{graphicalabstract}
+
+%%Research highlights
+% \begin{highlights}
+% \item Research highlight 1
+% \item Research highlight 2
+% \end{highlights}
+
+\begin{keyword}
+%% keywords here, in the form: keyword \sep keyword
+keyword one \sep keyword two
+%% PACS codes here, in the form: \PACS code \sep code
+\PACS 0000 \sep 1111
+%% MSC codes here, in the form: \MSC code \sep code
+%% or \MSC[2008] code \sep code (2000 is the default)
+\MSC 0000 \sep 1111
+\end{keyword}
+
+\end{frontmatter}
+
+%% \linenumbers
+
+%% main text
+\section{Introdução}
+\label{sec:sample1}
+
+\begin{itemize}
+
+\color{blue}
+\item Contextualizar o problema que está sendo tratado. Ressaltar a importância de encontrar candidatos mais aderentes às demandas específicas de uma empresa. A informação poderia vir de extração automática de CVs. (1 ou 2 parágrafos). 
+\item Ressaltar, se houver, a relevância de ter perfis aderentes às demandas, citando algum autor. (1 parágrafo) Citar a busca de perfis considerando as redes profissionais onde existem milhares de possíveis candidatos (1 ou 2 parágrafos)
+\item Citar artigos e descrever suscintamente (2 linha), entre nacionais e internacionais, de Journal (principalmente) ou Conferências que tenham discutido o ranqueamento de candidatos. Ressaltar que todos eles não ranqueam mais específica, com relevância de habilidades, etc. (3 ou 4 parágrafos).
+\item Apresentar a proposta do trabalho e a relevância da medida que está sendo proposta (2 parágrafos)
+-Descrever as seções do artigo.
+
+\end{itemize}
+\begin{itemize}
+\item problema a ser resolvido: como saber se um candidado é bom ou ruim para uma certa vaga?
+\item com o advento de recrutamento online \cite{automatic-profiling-2008}, mais e mais recursos são necessários para avaliar candidatos de forma automática, e a questão de saber o que analisar dentre várias variáveis acaba sendo de forma mais qualitativa, assim sendo suscetível a preconceitos humanos
+\item muitos candidatos estão aplicando e as tarefas manuais acabam gastando muito tempo, portanto, empresas estão procurando formas de automatizar esse processo 
+% \item Standards such as O*NET (Occupational Net), ISIC (International
+% Standard Industrial Classification of All Economic Activities), SOC (Standard
+% Occupational Classification) or NAICS (North American Industry Classification
+% System) provide a feasible basis for the development of eRecruitment informa-
+% tion systems. \cite{mochol2006practical}
+\item Estudo de Toronto confirmou que os gerentes que seguem um algoritmo, tendem a contratar pessoas que permanecem mais tempo \cite{NBERw21709}.
+\item We then document substantial variation in
+how managers appear to use job test recommendations: some tend to hire applicants with the best test scores while others appear to make many more exceptions. Across a range of specications, we show that hiring against test recommendations is associated with worse outcomes. \cite{NBERw21709}.
+\item duas formas dessas informação chegar: além ao invés de testes, essas informações podem ser extraídas também de CVs, como proposta em alguns estudos \cite{automatic-profiling-2008, e-gen-job-processing-2007}
+
+\item O problema reside em o que fazer com essas informações, gerentes podem ter os resultados dos testes ou habilidades porém em uma massa dados muito grande, as decisões acabam ficando ruins, por isso esses sistemas. Nesse sistemas, um passo em comum é o de ranking de candidatos, porém não existe nenhuma medida que consegue relevar cada habilidade de forma dinâmica, nem calcular se o candidato sabe mais ou menos do que o necessário para a empresa.
+
+
+\item Employers often receive a large number of applications for an open position, due to the strained situation of the labour market. The costs of manually preselecting potential candidates have risen and employers are searching for means to automate the preselection of candidate \cite{impact-semantic-web-2005}
+
+\item Artigos que discutem o ranqueamento:
+  \begin{itemize}
+  \item E-Gen: Automatic Job Offer Processing System for Human Resources \cite{e-gen-job-processing-2007}. Predece e compartilha 3 autores com o \cite{automatic-profiling-2008}. Implementa duas tarefas complexas: análise e categorização de vagas. Resolve a primeira parte , análise, enquanto o segundo artigo resolve a segunda, a categorização e ranking.
+  
+  \item \textbf{The Impact of Semantic Web Technologies on Job Recruitment Processes} \cite{impact-semantic-web-2005}. Simplificação dos processos de recrutamento online pela utilização de tecnologias da web semântica. Para dar matching das vagas e dos perfils do candidatos, um matching semântico é utilizado. A similaridade é o resultado da distância de cada termo em sua posição hierárquica. Uma estrutura de árvore é utilizada. Calcula a similaridade conceitual e de competência, porém não é possível ter uma medida de cutoff, é um intervalo contínuo de 0 à 1, dado que todos os valores são positivos. Utiliza um conceito de ontologia de hierarquia, enquanto o nosso um de ranking. Sobre a competência, a nossa medida já infere com base na ordem no ranking.
+  Foi criada uma medida de fit de vaga, onde é possível saber se o candidato sabe mais ou igual ao que esperado, porém, sempre resulta no mesmo resultado (0), para conhecimentos num nível abaixo do pedido na vaga. Contém uma constante para indicar o intervalo entre as classes, pois nem sempre precisa ser constante e é possível indicar pesos para diferentes requisitos. A diferença com a nossa medida é que a nossa não utiliza uma estrutra de árvore, e sim uma mais simples, não é necessário colocar mais um dado sobre o peso da medida, pois a sua posição no ranking já indica isso, não consegue representar um matching e tampouco o conceito de mérito.
+  
+  \item Job Offer Management: How Improve the Ranking of Candidates \cite{improve-ranking-candidates-2009}. Mesmos autores do que \cite{automatic-profiling-2008, e-gen-job-processing-2007}. Transforma os textos da vaga e do candidato em um vetor de termos com seus respetivos pesos. Sem match.
+  
+  \item Automatic Profiling System for Ranking Candidates Answers in Human Resources \cite{automatic-profiling-2008}. Várias funcionalidades: análise e categorização de ofertas de vagas de documentos desformatados, uma análise e ranking de respostas de candidatos. A parte que nos interessa é o ranking, que é feito de forma semântica, uma sequência de termos do candidato e vaga. Testaram a medida de cosseno, minkwoskim overlap e okabis
+  
+  \end{itemize}
+  
+\item \textbf{Proposta:} Uma medida simples para ranking de candidatos dado os seus conhecimentos e o que é necessário para a vaga, onde é presente o matching de atributos com os níveis de competência, a relação entre as classes é dinâmica, cada variável tem o seu próprio peso. Mérito também é presente.
+\end{itemize}
+
+
+% Lorem ipsum dolor sit amet, consectetur adipiscing \cite{Fabioetal2013} elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit \cite{Blondeletal2008,FabricioLiang2013,Chenetal2013} anim id est laborum.
+
+% Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum see appendix~\ref{sec:sample:appendix}.
+
+\section{Trabalhos Relacionados}
+\label{sec:sample2}
+
+\begin{itemize}
+\color{blue}
+\item Organizar os trabalhos, que tratam do rankeamente e busca de perfis aderentes às demandas das empresas. A organização depende do que vc está observando de todos os artigos revisados. Organizar enquanto possível de forma cronológica. (até 6 a 8 parágrafos).  
+\item Finalizar esta seção indicando a diferença desses trabalhos com a proposta apresentada (1 parágrafos)
+\end{itemize}
+
+\begin{itemize}
+\item \textbf{Inspiração}
+\item O trabalho \cite{DOSSANTOS20151247} sobre qual medida de similaridade é a mais estável para a clustering de dados categóricos concluiu que a mais simples, a de Gower, obteve os melhores resultados. Portanto, queríamos uma medida simples que conseguisse representar vários conceitos sem aumentar o nível de complexidade, esses eram: peso das variáveis, matching do nível de competência, input de forma mais crua possível e incorporação de mérito.
+
+\item \textbf{Ordinal para intervalar}
+\item A medida usa por trás a ordem das variáveis. Como as variáveis são ordinais categóricas, não é possível realizar operações matemáticas antes de alguma transformação para números (como subtrair "avançado" de "iniciante"?).
+\item 1973 | Cluster Analysis for Applications \cite{ANDERBERG197325} (ORDINAL TO INTERVAL - Class Ranks). A forma mais direta é converter para as classes de rank, como 0, 1, 2, etc.  A transformação de ordinal para intervalar então foi feita, alguns autores são contra, mas \cite{ANDERBERG197325} explica que transformando em rank classes mantém uma alta correlação. Se a relação entre as classes não for linear, simplesmente utilizar uma outra função, como $ln sx$ e $e^x$. 
+
+\item 1990 | Finding Groups in Data: An Introduction to Cluster Analysis. (p. 35) \cite{analysis-cluster}. Apresentou uma forma de calcular a distância de dados ordinais, intervalares e ratios com a equação
+
+\begin{equation}
+    d_{ijk} =  \frac{|x_{ik} - x_{jk}|}{max(x_k) - min(x_k)}
+\end{equation}
+
+onde $w_{ijk}$ é 1 ou 0.
+
+\begin{equation}
+    S_{ij} = 1 - \frac{\sum^n_{i=1} w_{ijk} \cdot d_{ijk}}{\sum^n_{i=1} w_{ijk}}
+\end{equation}
+
+\item 1999 | Extending Gower's General Coefficient of Similarity to Ordinal Characters  \cite{extending-gower-ordinal}. Apresentou chegou numa medida igual ao \cite{analysis-cluster} e o aplicou em botônica. Os pesos das variáveis sempre são os mesmos, portanto, o valor final da similaridade é:
+
+\begin{equation}
+    s_{ijk} =  1 - \frac{|r_{ik} - r_{jk}|}{max(r_i) - min(r_i)}
+\end{equation}
+
+\begin{equation}
+    S_{ij} =  1 - \frac{1}{n}\sum^n_{i=1}s_{ijk}
+\end{equation}
+
+
+\item \textbf{Ranking de candidatos}
+\end{itemize}
+
+\section{Metodologia}
+\label{sec:sample3}
+\begin{itemize}
+\item Trazer uma descrição do problema considerado. 
+\item Apresentar as formalizações matemáticas que sustentam a proposta
+\item Apresentar a métrica resultante
+\item Apresentar o algoritmo e pseudo código explicando cada linha do código em nível de abstração mais alta. 
+\item Outras definições necessárias.
+\end{itemize}
+
+\section{Avaliação}
+\label{sec:sample4}
+\begin{itemize}
+\item Indicar a métrica ou medida de avaliação. Ressaltar que a avaliação é feita observando a coerência do resultado da métrica. Ressaltar que o resultado é determinístico. 
+\item Apresentar os experimentos que serão conduzidos. Esses cenários não são aleatórios, devem de procurar explorar alguma característica da métrica.
+\end{itemize}
+
+\section{Conclusão e Trabalhos Futuros}
+\label{sec:sample5}
+\begin{itemize}
+\item Resumir a proposta do artigo
+\item Ressaltar a principais repercusões da métrica 
+\item Ressaltar as limitações da métrica
+\item Trabahos futuros consistentes.
+\end{itemize}
+%% The Appendices part is started with the command \appendix;
+%% appendix sections are then done as normal sections
+\appendix
+
+% \section{Sample Appendix Section}
+% \label{sec:sample:appendix}
+% Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor section \ref{sec:sample1} incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+%% If you have bibdatabase file and want bibtex to generate the
+%% bibitems, please use
+%%
+ \bibliographystyle{elsarticle-num} 
+ \bibliography{cas-refs}
+
+%% else use the following coding to input the bibitems directly in the
+%% TeX file.
+
+% \begin{thebibliography}{00}
+
+% %% \bibitem{label}
+% %% Text of bibliographic item
+
+% \bibitem{}
+
+% \end{thebibliography}
+\end{document}
+\endinput
+%%
+%% End of file `elsarticle-template-num.tex'.
