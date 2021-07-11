@@ -27,6 +27,8 @@
 \documentclass[preprint,12pt]{elsarticle}
 \usepackage{xcolor}
 \usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage[titlenumbered,ruled]{algorithm2e}
 
 %% Use the option review to obtain double line spacing
 %% \documentclass[authoryear,preprint,review,12pt]{elsarticle}
@@ -156,11 +158,10 @@ keyword one \sep keyword two
 \label{sec:sample1}
 
 \begin{itemize}
-
 \color{blue}
 \item Contextualizar o problema que está sendo tratado. Ressaltar a importância de encontrar candidatos mais aderentes às demandas específicas de uma empresa. A informação poderia vir de extração automática de CVs. (1 ou 2 parágrafos). 
 \item Ressaltar, se houver, a relevância de ter perfis aderentes às demandas, citando algum autor. (1 parágrafo) Citar a busca de perfis considerando as redes profissionais onde existem milhares de possíveis candidatos (1 ou 2 parágrafos)
-\item Citar artigos e descrever suscintamente (2 linha), entre nacionais e internacionais, de Journal (principalmente) ou Conferências que tenham discutido o ranqueamento de candidatos. Ressaltar que todos eles não ranqueam mais específica, com relevância de habilidades, etc. (3 ou 4 parágrafos).
+\item Citar artigos e descrever sucintamente (2 linha), entre nacionais e internacionais, de Journal (principalmente) ou Conferências que tenham discutido o ranqueamento de candidatos. Ressaltar que todos eles não ranqueam mais específica, com relevância de habilidades, etc. (3 ou 4 parágrafos).
 \item Apresentar a proposta do trabalho e a relevância da medida que está sendo proposta (2 parágrafos)
 -Descrever as seções do artigo.
 
@@ -294,26 +295,27 @@ Porém, não é necessário somente analisar quem sabe menos, igual ou mais que 
 Por fim, no contexto de recrutamento, é possível não se importar se uma pessoa sabe mais que algo esperado, simplesmente que ela sabe. Assim, é necessário representar essa ideia na medida onde conhecimentos além do esperado, o mérito, podem ou não resultar em conhecimentos maiores.
 
 \subsection{Apresentar as formalizações matemáticas que sustentam a proposta}
+
 \begin{itemize}
-    \item Ordinal para intervalar: o primeiro passo antes de realizar qualquer conta é transformar os dados ordinais em intervalares. Uma escala quadrática foi escolhida porque nesse contexto, melhor representa as relações entre as classes. Na prática, uma competência avançada não é, por exemplo, duas vezes a intermediária, mas sim algo de ordem maior, por isso o quadrado. Cada nível de competência de um conhecimento, $k$, é transformado em sua posição ao quadrado no vetor de ranking, $r_k$, iniciando em 0.
+    \item Ordinal para intervalar: o primeiro passo antes de realizar qualquer conta é transformar os dados ordinais em intervalares. Cada nível de competência de um conhecimento, $k$, é transformado em sua posição no vetor de ranking, $r_k$, iniciando em 0.
     
     $$\\k = \{ \text{iniciante}, \text{intermediário}, \text{avançado} \}$$ 
-    $$ \therefore r_k = \{ 0^2, 1^2, 2^2 \} = \{ 0, 1, 4 \} $$
+    $$ \therefore r_k = \{ 0, 1, 2 \} $$
     
-    \item Matching de competência de cada conhecimento: para saber se dado um conhecimento, o nível de competência é menor, igual ao maior do que o necessário, é realizada um simples matching, $m_{ijk}$, de subtração entre o nível de competência desejado da empresa, $r_{jk}$, e o nível do candidato, $r_{ik}$.
+    \item Matching de competência de cada conhecimento: Uma escala quadrática foi escolhida porque nesse contexto, melhor representa as relações entre as classes. Na prática, uma competência avançada não é, por exemplo, duas vezes a intermediária, mas sim algo de ordem maior, por isso o quadrado. Para saber se dado um conhecimento, o nível de competência é menor, igual ao maior do que o necessário, é realizada um simples matching, $m_{ijk}$, de subtração entre o nível de competência desejado da empresa, $r_{jk}$, e o nível do candidato, $r_{ik}$.
     
-    $$\\ m_{ijk} = r_{ik} - r_{jk} $$
+    $$\\ m_{ijk} = r_{ik}^2 - r_{jk}^2 $$
     
     Como cada conhecimento pode ter diferentes níveis de competência, dividimos cada nível de competência pelo maior valor possível na ranking. Como em cada par de subtração a comparação é feita com o mesmo atributo, isso se simplifica em:
     
-    $$\\ m_{ijk} = \frac{r_{ik} - r_{jk}}{max(r_k)} $$
+    $$\\ m_{ijk} = \frac{r_{ik}^2 - r_{jk}^2}{max(r_k)^2} $$
     
     Podemos simplesmente somar todos os matches e dividir pelo número de atributos, por enquanto:
       
     \begin{equation}
     S_{ij} =  \frac{\sum_{k=1}^n m_{ijk}}
                   {n} = 
-              \frac{\sum_{k=1}^n \frac{r_{ik} - r_{jk}}{max(r_k)}}
+              \frac{\sum_{k=1}^n \frac{r_{ik}^2 - r_{jk}^2}{max(r_k)^2}}
                   {n}
     \end{equation}
     
@@ -337,8 +339,9 @@ Por fim, no contexto de recrutamento, é possível não se importar se uma pesso
         
         O problema é que se for somado os matches de cada candidato, o valor final é o mesmo, 0, o que é incorreto, pois o candidato B é básico em Word sendo que é necessário saber avançado, portanto, por isso a soma deve ser ponderada pelo peso dos conhecimentos. Este é igual ao nível de competência desejado da habilidade no vetor de rankings somado a 1, com isso, temos as seguintes novas similaridades:
         
-        $$ S_{A,E} = \frac{\tfrac{4 - 4}{4} \cdot \boldsymbol{(\tfrac{4}{4} + 1)} + \tfrac{0 - 0}{4} \cdot \boldsymbol{(\tfrac{0}{4} + 1)}}{(\boldsymbol{\tfrac{4}{4} + 1) + (\tfrac{0}{4} + 1)}} = \frac{0 + 0}{3} = 0 $$
-        $$ S_{B,E} = \frac{\tfrac{0 - 4}{4} \cdot (\boldsymbol{\tfrac{4}{4} + 1)} + \tfrac{4 - 0}{4} \cdot (\boldsymbol{\tfrac{0}{4} + 1)}}{(\boldsymbol{\tfrac{4}{4} + 1) + (\tfrac{0}{4} + 1)}} = \frac{-2 + 1}{3} = -0.333 $$
+        $$ S_{A,E} = \frac{\tfrac{4 - 4}{4} \cdot \boldsymbol{(\tfrac{2}{2} + 1)} + \tfrac{0 - 0}{4} \cdot \boldsymbol{(\tfrac{0}{2} + 1)}}{(\boldsymbol{\tfrac{2}{2} + 1)} + \boldsymbol{(\tfrac{0}{2} + 1)}} = \frac{0 + 0}{3} = 0 $$
+        
+        $$ S_{B,E} = \frac{\tfrac{0 - 4}{4} \cdot (\boldsymbol{\tfrac{2}{2} + 1)} + \tfrac{4 - 0}{4} \cdot (\boldsymbol{\tfrac{0}{2} + 1)}}{(\boldsymbol{\tfrac{2}{2} + 1)} + \boldsymbol{(\tfrac{0}{2} + 1)}} = \frac{-2 + 1}{3} = -0.333 $$
         
     \end{itemize}
     
@@ -353,7 +356,8 @@ Por fim, no contexto de recrutamento, é possível não se importar se uma pesso
     \begin{equation}
     S_{ij} = \frac{\sum_{k=1}^n m_{ijk} \cdot w_{jk}}
                   {\sum_{k=1}^n w_{jk}} = 
-             \frac{\sum_{k=1}^n \frac{r_{ik} - r_{jk}}{max(r_k)} \cdot (\frac{r_{jk}}{max(r_k)} + 1)}               {\sum_{k=1}^n {\frac{r_{jk}}{max(r_k)} + 1}}
+             \frac{\sum_{k=1}^n \frac{r_{ik}^2 - r_{jk}^2}{max(r_k)^2} \cdot (\frac{r_{jk}}{max(r_k)} + 1)}
+                  {\sum_{k=1}^n {\frac{r_{jk}}{max(r_k)} + 1}}
     \end{equation}
 
     \item Mérito
@@ -370,22 +374,22 @@ Por fim, no contexto de recrutamento, é possível não se importar se uma pesso
     
     Utilizando do cenário anterior, onde não se valoriza o mérito, obtemos:
     
-    $$ S_{A,E} = \frac{\tfrac{1 - 1}{4} \cdot \tfrac{5}{4} \cdot (\tfrac{1}{4} + 1) \cdot \textbf{0}}
-                      {\tfrac{1}{4} + 1}
+    $$ S_{A,E} = \frac{\tfrac{1 - 1}{4} \cdot (\tfrac{1}{2} + 1) \cdot \textbf{0}}
+                      {\tfrac{1}{2} + 1}
                = 0 \cdot \textbf{0} = 0 $$
     
-    $$ S_{A,E} = \frac{\tfrac{4 - 1}{4} \cdot (\tfrac{1}{4} + 1) \cdot \textbf{0}}
-                      {\tfrac{1}{4} + 1}
+    $$ S_{A,E} = \frac{\tfrac{4 - 1}{4} \cdot (\tfrac{1}{2} + 1) \cdot \textbf{0}}
+                      {\tfrac{1}{2} + 1}
                = \frac{3}{4} \cdot \textbf{0} = 0 $$
     
     Caso fosse valorizado, obteríamos:
     
-    $$ S_{A,E} = \frac{\tfrac{1 - 1}{4} \cdot \tfrac{5}{4} \cdot (\tfrac{1}{4} + 1) \cdot \textbf{1}}
-                      {\tfrac{1}{4} + 1}
+    $$ S_{A,E} = \frac{\tfrac{1 - 1}{4} \cdot (\tfrac{1}{2} + 1) \cdot \textbf{1}}
+                      {\tfrac{1}{2} + 1}
                = 0 \cdot \textbf{1} = 0 $$
     
-    $$ S_{A,E} = \frac{\tfrac{4 - 1}{4} \cdot (\tfrac{1}{4} + 1) \cdot \textbf{1}}
-                      {\tfrac{1}{4} + 1}
+    $$ S_{A,E} = \frac{\tfrac{4 - 1}{4} \cdot (\tfrac{1}{2} + 1) \cdot \textbf{1}}
+                      {\tfrac{1}{2} + 1}
                = \frac{3}{4} \cdot \textbf{1} = 0.75 $$
                
     Desta forma, ao incorporar $c_{k}$ é obtido a medida \ref{sim-merit}.
@@ -398,7 +402,7 @@ Por fim, no contexto de recrutamento, é possível não se importar se uma pesso
 \label{sim-merit}
 S_{ij} =  \frac{\sum_{k=1}^n m_{ijk} \cdot w_{jk} \cdot c_k}
                {\sum_{k=1}^n w_{jk}} =
-          \frac{\sum_{k=1}^n \frac{r_{ik} - r_{jk}}{max(r_k)} \cdot (\frac{r_{jk}}{max(r_k)} + 1) \cdot c_{k}}
+          \frac{\sum_{k=1}^n \frac{r_{ik}^2 - r_{jk}^2}{max(r_k)^2} \cdot (\frac{r_{jk}}{max(r_k)} + 1) \cdot c_{k}}
                {\sum_{k=1}^n {\frac{r_{jk}}{max(r_k)} + 1}}
 \end{equation}
 
@@ -422,12 +426,153 @@ c_{k} = \begin{cases} 1, & \text{if } r_{ik} < r_{jk} \\ c_{k}, & \text{if } r_{
 0 \leq c_k \leq 1
 \end{equation}
 
+\subsubsection{Formalizações}
+
+\begin{itemize}
+\item Para qualquer valor de $r_{ik}$,   $r_{ik} + n$ sempre terá um valor de similaridade maior que  $r_{ik}$
+\item Para um mesmo valor de $r_{ik}$ entre objetos, um objeto com $r_{jk} + n$ resultará em um valor de similaridade menor que $r_{jk}$
+\item Para um mesmo valor de $r_{jk}$ entre objetos, um objeto com $r_{ik} + n$ resultará em um valor de similaridade maior do que um objeto com $r_{ik}$
+\item Dado que $r_{ik}$ de um objeto é igual à $r_{jk}$, o valor de similaridade será $0$, independente do valor de $c_{ijk}$ 
+\item Dado que $r_{ik}$ de um objeto é menor que $r_{jk}$, o valor de similaridade será no intervalo $[-1, 0[$ 
+\item Dado que $r_{ik}$ de um objeto é maior que $r_{jk}$, o valor de similaridade será no intervalo $]0, 1]$
+\item $S_{ij} \in [-1,1]$ porém ocupará um subintervalo de módulo igual à $1$, por exemplo, de $-0.55$ a  $0.45$ e  $-0.9$ a $0.1$
+\end{itemize}
+
+\subsection{Algoritmo}
+
+\begin{algorithm}[H]
+    \SetKwInOut{Input}{input}
+    \SetKwInOut{Output}{output}
+
+    \Input{A lista de rankings $r_j$, das competências necessárias de cada conhecimento da empresa. A lista de rankings, $r_i$, das competências do candidato. Opcionalmente, uma lista com a valorização ou não de cada conhecimento, $c$. Todas as listas devem estar ordenadas pelos mesmos conhecimentos.}
+    \Output{Um valor entre -1 e 1 representando a similaridade do candidato com a vaga}
+    
+    n \gets 0 \\
+    d \gets 0 \\
+    \ForEach{r_{ik} \in r_{i}; r_{jk} \in r_j; c_k \in c}{
+        n \gets n + \tfrac{r_{ik}^2 - r_{jk}^2}{max(r_k)^2} \cdot (\tfrac{r_{jk}}{max(r_k)} + 1) \cdot c_{k} \\
+        d \gets d + \tfrac{r_{jk}}{max(r_k)} + 1 \\
+    }
+    \Return n/d
+    \caption{Algoritmo para calcular a similaridade}
+\end{algorithm}
+
+\subsection{Outras definições necessárias}
+
+A medida foi aplicada para obter a similaridade entre o candidato e vaga, porém, qualquer outra situação onde existem variáveis ordinais e alguma relação de comparação para averiguar, a medida pode ser utilizada. O mérito, caso não seja necessário, pode ter o valor constante de 1, por exemplo, para situações onde não faz sentido o ter.
+
+A medida também suporta diferentes quantidades de competência por conhecimento.
+
 \section{Avaliação}
 \label{sec:sample4}
 \begin{itemize}
+\color{blue}
 \item Indicar a métrica ou medida de avaliação. Ressaltar que a avaliação é feita observando a coerência do resultado da métrica. Ressaltar que o resultado é determinístico. 
 \item Apresentar os experimentos que serão conduzidos. Esses cenários não são aleatórios, devem de procurar explorar alguma característica da métrica.
 \end{itemize}
+
+\subsection{Medida de Avaliação}
+A métrica é determinística, portanto, ao cobrir os cenários representativos, se a métrica condizer com a expectativa, então ela é suficiente. Como não existe outra medida como esta, não há o que comparar.
+
+\subsection{Experimentos}
+
+Todos os cenários abaixo exploram uma característica da medida. Foram extraídos das tabelas \ref{table:merit-1-all}, \ref{table:merit-0-all} e \ref{table:merit-0-and-1}.
+
+\begin{itemize}
+    \item Matching de competências iguais em todos conhecimentos
+    \begin{itemize}
+      \item $ E(0,0) \text{x} C(0,0) = 0 $: Competências iguais tanto na vaga e empresa resultam em similaridade 0.
+      \item $ E(1,1) \text{x} C(1,1) = 0 $: Competências iguais tanto na vaga e empresa resultam em similaridade 0.
+      \item $ E(2,2) \text{x} C(2,2) = 0 $: Competências iguais tanto na vaga e empresa resultam em similaridade 0.
+    \end{itemize}
+    \item Candidatos com as mesmas competências mas em conhecimentos opostos
+    \begin{itemize}
+      \item $ E(0,1) \text{x} C(0,2) = 0.45 $: Tem similaridade maior, porque o candidato, para cada conhecimento, sabe mais ou igual do que o pedido.
+      \item $ E(0,1) \text{x} C(2,0) = 0.25 $: Tem similaridade menor, porque mesmo o candidato tendo as mesmas competências que o de cima, estes são em conhecimentos onde ocorre um mismatch em um conhecimento com mais peso do que o conhecimento onde ocorre um match, mas tem peso menor. 
+    \end{itemize}
+    
+    \item Candidatos com a mesma competência em um conhecimento mas diferentes no outro
+    \begin{itemize}    
+      \item $ E(2,0) \text{x} C(1,0) = -0.5 $: Menor do que o de baixo porque no segundo conhecimento, sabe menos.
+      \item $ E(2,0) \text{x} C(1,1) = -0.417 $: Menor do que o de baixo porque no segundo conhecimento, sabe menos.
+      \item $ E(2,0) \text{x} C(1,2) = -0.167 $
+    \end{itemize}
+    
+    \item Mérito no caso anterior: ao não valorizar o mérito do segundo conhecimento, todos as similaridades serão idênticas porque estas são iguais ou maiores que o esperado, $0$.
+    \begin{itemize}    
+      \item $ E(2,0) \text{x} C(1,0) \text{x} M(1,0) = -0.5 $
+      \item $ E(2,0) \text{x} C(1,1) \text{x} M(1,0) = -0.5 $
+      \item $ E(2,0) \text{x} C(1,2) \text{x} M(1,0) = -0.5 $
+    \end{itemize}
+    
+    \item Extremos:
+    \begin{itemize}    
+      \item $ E(0,0) \text{x} C(2,2) = 1 $
+      \item $ E(2,2) \text{x} C(0,0) = -1 $
+    \end{itemize}
+\end{itemize}
+
+
+\begin{table}[htp]
+\caption{Mérito 1 para todas os conhecimentos}
+\label{table:merit-1-all}
+\centering
+\begin{tabular}{@{}llllllllll@{}}
+\toprule
+E\textbackslash C & (0,0) & (0,1) & (0,2) & (1,0) & (1,1) & (1,2) & (2,0) & (2,1) & (2,2) \\ \midrule
+(0,0) & 0  & 0.125  & 0.5  & 0.125  & 0.25  & 0.625  & 0.5  & 0.625  & 1 \\
+(0,1) & -0.15  & 0  & 0.45  & -0.05  & 0.1  & 0.55  & 0.25  & 0.4  & 0.85 \\
+(0,2) & -0.667  & -0.5  & 0  & -0.583  & -0.4167  & 0.083  & -0.333  & -0.167  & 0.333 \\
+(1,0) & -0.15  & -0.05  & 0.25  & 0  & 0.1  & 0.4  & 0.45  & 0.55  & 0.85 \\
+(1,1) & -0.25  & -0.125  & 0.25  & -0.125  & 0  & 0.375  & 0.25  & 0.375  & 0.75 \\
+(1,2) & -0.678  & -0.536  & -0.107  & -0.571  & -0.428  & 0  & -0.25  & -0.107  & 0.321 \\
+(2,0) & -0.667  & -0.583  & -0.333  & -0.5  & -0.417  & -0.167  & 0  & 0.083  & 0.333 \\ 
+(2,1) & -0.678  & -0.571  & -0.25  & -0.536  & -0.428  & -0.107  & -0.107  & 0  & 0.321 \\
+(2,2) & -1  & -0.875  & -0.5  & -0.875  & -0.75  & -0.375  & -0.5  & -0.375  & 0 \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\newpage
+
+\begin{table}[htp]
+\caption{Mérito 0 para todas os conhecimentos}
+\label{table:merit-0-all}
+\centering
+\begin{tabular}{@{}llllllllll@{}}
+\toprule
+E\textbackslash C & (0,0) & (0,1) & (0,2) & (1,0) & (1,1) & (1,2) & (2,0) & (2,1) & (2,2) \\ \midrule
+(0,0) & 0  & 0  & 0  & 0  & 0  & 0  & 0  & 0  & 0 \\
+(0,1) & -0.15  & 0  & 0  & -0.15  & 0  & 0  & -0.15  & 0  & 0 \\
+(0,2) & -0.667  & -0.5  & 0  & -0.667  & -0.5  & 0  & -0.667  & -0.5  & 0 \\
+(1,0) & -0.15  & -0.15  & -0.15  & 0  & 0  & 0  & 0  & 0  & 0 \\
+(1,1) & -0.25  & -0.125  & -0.125  & -0.125  & 0  & 0  & -0.125  & 0  & 0 \\
+(1,2) & -0.678  & -0.536  & -0.107  & -0.571  & -0.428  & 0  & -0.571  & -0.428  & 0 \\
+(2,0) & -0.667  & -0.667  & -0.667  & -0.5  & -0.5  & -0.5  & 0  & 0  & 0 \\
+(2,1) & -0.678  & -0.571  & -0.571  & -0.536  & -0.428  & -0.428  & -0.107  & 0  & 0 \\
+(2,2) & -1  & -0.875  & -0.5  & -0.875  & -0.75  & -0.375  & -0.5  & -0.375  & 0 \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htp]
+\caption{Mérito 1 e 0 para os conhecimentos}
+\label{table:merit-0-and-1}
+\centering
+\begin{tabular}{@{}llllllllll@{}}
+\toprule
+E\textbackslash C & (0,0) & (0,1) & (0,2) & (1,0) & (1,1) & (1,2) & (2,0) & (2,1) & (2,2) \\ \midrule
+(0,0) & 0  & 0  & 0  & 0.125  & 0.125  & 0.125  & 0.5  & 0.5  & 0.5 \\
+(0,1) & -0.15  & 0  & 0  & -0.05  & 0.1  & 0.1  & 0.25  & 0.4  & 0.4 \\
+(0,2) & -0.667  & -0.5  & 0  & -0.583  & -0.417  & 0.083  & -0.333  & -0.167  & 0.333 \\
+(1,0) & -0.15  & -0.15  & -0.15  & 0  & 0  & 0  & 0.45  & 0.45  & 0.45 \\
+(1,1) & -0.25  & -0.125  & -0.125  & -0.125  & 0  & 0  & 0.25  & 0.375  & 0.375 \\
+(1,2) & -0.678  & -0.536  & -0.107  & -0.571  & -0.428  & 0  & -0.25  & -0.107  & 0.321 \\
+(2,0) & -0.667  & -0.667  & -0.667  & -0.5  & -0.5  & -0.5  & 0  & 0  & 0 \\
+(2,1) & -0.678  & -0.571  & -0.571  & -0.536  & -0.428  & -0.428  & -0.107  & 0  & 0 \\
+(2,2) & -1  & -0.875  & -0.5  & -0.875  & -0.75  & -0.375  & -0.5  & -0.375  & 0 \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\newpage
 
 \section{Conclusão e Trabalhos Futuros}
 \label{sec:sample5}
@@ -435,7 +580,7 @@ c_{k} = \begin{cases} 1, & \text{if } r_{ik} < r_{jk} \\ c_{k}, & \text{if } r_{
 \item Resumir a proposta do artigo
 \item Ressaltar a principais repercussões da métrica 
 \item Ressaltar as limitações da métrica
-\item Trabahos futuros consistentes.
+\item Trabalhos futuros consistentes.
 \end{itemize}
 %% The Appendices part is started with the command \appendix;
 %% appendix sections are then done as normal sections
