@@ -91,7 +91,7 @@
 % \title{Uma nova medida de similaridade para dados categóricos ordinais aplicada ao 
 % ranking de candidatos}
 
-\title{Ranqueamendo de candidatos utilizando uma nova medida de *similaridade* para dados categóricos ordinais}
+\title{Ranqueando candidatos utilizando uma nova medida de similaridade para dados ordinais}
 
 %% use optional labels to link authors explicitly to addresses:
 %% \author[label1,label2]{}
@@ -157,87 +157,97 @@ keyword one \sep keyword two
 \section{Introdução}
 \label{sec:introducao}
 
-\begin{itemize}
-\color{blue}
-\item adicionar conteúdo sobre o tratamento de dados ordinais para intervalares
-% \item Contextualizar o problema que está sendo tratado. Ressaltar a importância de encontrar candidatos mais aderentes às demandas específicas de uma empresa. A informação poderia vir de extração automática de CVs. (1 ou 2 parágrafos). 
-% \item Ressaltar, se houver, a relevância de ter perfis aderentes às demandas, citando algum autor. (1 parágrafo) Citar a busca de perfis considerando as redes profissionais onde existem milhares de possíveis candidatos (1 ou 2 parágrafos)
-% \item Citar artigos e descrever sucintamente (2 linha), entre nacionais e internacionais, de Journal (principalmente) ou Conferências que tenham discutido o ranqueamento de candidatos. Ressaltar que todos eles não ranqueam mais específica, com relevância de habilidades, etc. (3 ou 4 parágrafos).
-% \item Apresentar a proposta do trabalho e a relevância da medida que está sendo proposta (2 parágrafos)
-% -Descrever as seções do artigo.
 
-\end{itemize}
+Com a crescente democratização e popularização da internet, empresas estão optando por sistemas de recrutamento online. Sites como LinkedIn e Indeed são intuitivos e facilitam na aplicação de vagas, entretanto, o resultado é uma grande massa de candidatos e um processo manual por trás para analisar cada individuo. Desta forma, é vital a presença de sistemas que auxiliam as empresas por meio da automatização. Apresenta-se então a pergunta de como saber se um candidato tem as necessidades necessárias para uma vaga.
 
-Com a crescente democratização e alfabetização da internet, empresas estão optando por sistemas de recrutamento online. Sites como LinkedIn e Indeed são intuitivos e facilitam na aplicação de vagas, entretanto, o resultado é uma grande massa de candidatos e um processo manual por trás para analisar cada individuo. Desta forma, é vital a presença de sistemas que auxiliam as empresas por meio da automatização. Apresenta-se então a pergunta de como saber se um candidato é desejável para uma vaga.
+% As etapas principais consistem em extrair informações chaves dos currículos e posteriormente, os analisar e ranquear. Um alternativa são os testes de pré-triagem (https://www.testgorilla.com/) que também têm o propósito de reduzir a carga inicial de candidatos. Neles, os resultados são coletados e o gerente ou RH realiza uma decisão informada acerca da permanência da pessoa no processo. 
 
-Projetos como o \cite{automatic-profiling-2008, e-gen-job-processing-2007} propõem sistemas para automatizar e auxiliar nos processos da contratação. As etapas principais consistem em extrair informações chaves dos currículos e posteriormente, os analisar e ranquear. Um alternativa são os testes de pré-triagem (https://www.testgorilla.com/) que também têm o propósito de reduzir a carga inicial de candidatos. Neles, os resultados são coletados e o gerente ou RH realiza uma decisão informada acerca da permanência da pessoa no processo. Dado isso, o problema reside em o que fazer com essas informações, gerentes podem ter os resultados dos testes e habilidades dos candidatos, mas a medida que a quantidade de dados aumenta, as decisões se tornam morosas e propícias a erros.
+% Dado isso, o problema reside em o que fazer com essas informações, gerentes podem ter os resultados dos testes e habilidades dos candidatos, mas a medida que a quantidade de dados aumenta, as decisões se tornam morosas e propícias a erros.
 
-Os benefícios de aderir a um processo bem definido foram observados no estudo \cite{NBERw21709}, onde gerentes que seguem um algoritmo tendem a contratar pessoas que permanecem mais tempo na empresa e que têm resultados de desempenho melhores ao longo prazo. Além de influenciar a contratação de melhores candidatos, estes algoritmos também podem ajudar a reduzir preconceitos e vieses cognitivos, tendo em vista que a interação humana é reduzida. 
+% Os benefícios de aderir a um processo bem definido foram observados no estudo \cite{NBERw21709}, onde gerentes que seguem um algoritmo tendem a contratar pessoas que permanecem mais tempo na empresa e que têm resultados de desempenho melhores ao longo prazo. Além de influenciar a contratação de melhores candidatos, estes algoritmos também podem ajudar a reduzir preconceitos e vieses cognitivos, tendo em vista que a interação humana é reduzida. 
 
-\cite{e-gen-job-processing-2007} desenvolveu o E-Gen, onde apresenta uma solução para processamento e análise automática de currículos. \cite{automatic-profiling-2008} continuou o trabalho e focou somente na categorização de vagas e processamento. \cite{improve-ranking-candidates-2009} construiu em cima do \cite{e-gen-job-processing-2007} para enfatizar e aprofundar no ranqueamento de candidatos. \cite{impact-semantic-web-2005} estuda o impacto de tecnologias da web semântica em processos de recrutamento, apresentando uma forma de calcular a similaridade entre a vaga e o currículo com base em preceitos semânticos. Já a pesquisa de \cite{impact-semantic-web-2005} utiliza de matching semântico para calcular a similaridade, indo além de somente utilizar palavras chaves.
+% A área de recrutamento online e os fatores humanos envolvidos trazem um desafio grande e são o objeto de estudo de diversos artigos na área de psicologia \cite{Chapman2005ApplicantAT, Hunter1990IndividualDI, Steel1984ARA} e computação \cite{poch-etal-2014-ranking, Singh2010PROSPECTAS, efficient-multifaceted, improve-ranking-candidates-2009, e-gen-job-processing-2007, mochol2006practical, impact-semantic-web-2005, automatic-profiling-2008, matching-field-relevance}. 
 
-% \cite{improve-ranking-candidates-2009} propõe uma forma de determinar a similaridade do candidato com a vaga por meio de medidas como Coseno, Minkwoskim e Overlap onde os objetos são vetores de textos das palavras chaves dos currículos e vagas. A comparação é feita de forma semântica de conhecimentos, independente dos níveis de proficiência. Portanto, a pergunta se o candidato sabe mais do que o necessário não pode ser respondida, e sim somente a se ele sabe algo.
+Projetos como o E-Gen \cite{e-gen-job-processing-2007} e Prospect \cite{Singh2010PROSPECTAS} processam e analisam automaticamente currículos. E-Gen implementa duas tarefas: a análise de vagas e um ranqueamento dos candidatos. Mais para frente, \cite{improve-ranking-candidates-2009} constrói em cima do E-Gen \cite{e-gen-job-processing-2007} para enfatizar e aprofundar no ranqueamento de candidatos, utilizando medidas de similaridades. Já o Propect também processa informações dos currículos, mas vai mais longe ao conseguir extrair o nível de proficiência de cada requisito, informações educacionais e experiências passadas, e as disponibilizar numa interface como filtros.
 
-% Com a estrutura hierárquica, consegue lidar com generalizações e especificações, e a distância entre os nós é relacionada à similaridade. A medida desenvolvida também consegue especificar qual é o nível de proficiência desejado em cada conhecimento e comparar com o nível do candidato, porém, não é possível determinar por meio do valor final, juntando todos os conhecimentos, o fato se o candidato sabe menos, igual ou mais do que o desejado para a vaga, porque não segue uma convenção de intervalo, o que é uma das propostas da medida apresentada neste projeto.
+Tanto E-Gen e Prospect contém um passo para calcular a similaridade entre vaga e candidato, E-Gen utiliza de medidas de similaridade e Prospect, TFIDF. Abordagens utilizando o matching semântico, como \cite{impact-semantic-web-2005} e \cite{impact-semantic-web-2005} são também presentes na literatura. Há também propostas utilizando soluções de sistemas de recomendação \cite{needle-haystack-recommender-systems} e algoritmos de classificação \cite{poch-etal-2014-ranking}. Nelas, uma versão holística do candidato é processada, entretanto, a possibilidade de especificação de níveis de proficiências desejados na vaga não existe.
 
-% Além da pesquisa de \cite{impact-semantic-web-2005}, as medidas de similaridade não utilizam dados categóricos ordinais, e esta tampouco explica o racional de converter de ordinal para intervalar.
-Para calcular a similaridade de dados categóricos ordinais, a forma mais simples é a atribuição de valores para cada classe, porém, a dúvida central é se é possível realizar a conversão sem perder informações dos dados categóricos. Em 1970, \cite{assignment-rank-order-1970} calculou a correlação entre os dados ordinais e a atribuição de um valor linear e monotônico a cada um se manteve alta. Em 1973, \cite{ANDERBERG197325} também confirmou que a atribuição de valores para as classes tem resultados bons, traz ainda o caso de utilizar uma função além de linear, como $ln x$ e $e^x$, na conversão para melhor representar a relação entre as classes.
 
-\cite{analysis-cluster} apresenta uma forma de calcular a distância de dados ordinais, intervalares e fracionários com somente uma medida, porém ela não consegue representar as relações de magnitude entre as classes ao se manter entre 0 e 1. Mais para frente, em 1999, \cite{analysis-cluster} extende o coeficiente de Gower para dados ordinais, porém ainda pecando nas relações de magnitude e na uniformidade de pesos dos atributos. Os dois estudos trouxeram como base a estrutura da medida daqui utilizada.
+% approach to integrate recommender systems in a holistic e-recruiting architecture
 
-Este trabalho apresenta uma medida simples de similaridade entre o candidato e vaga, onde cada conhecimento é uma variável categórica ordinal e cada nível de proficiência, uma possível classe da variável. Tem suporte a diferentes pesos de cada conhecimento por sua classificação no ranking, sendo uma variável ordinal, assim conseguindo distinguir entre níveis de proficiências. Introduz o conceito de mérito de conhecimento.
+% Para a psicologia, pois esse processo contém inúmeras variáveis, como o tempo de experiência, indicações, conhecimentos específicos, escolaridade, e a escolha de como ponderar esses fatores para realizar um recrutamento de sucesso, tanto a curto e longo prazo, não é simples. Para a computação, porque currículos são textos muitas vezes desestruturados e as formas de como analisá-lo, extrair as informações chaves e as ranquear se mantêm como desafios na área de Data Mining e Machine Learning. 
 
-Todos os pontos levantados da medida proposta são parcialmente ou inexistente nos outros trabalhos. Ela consegue inferir com base na simples ordenação das classes (níveis de proficiência) de cada atributo (conhecimento) quais são os pesos, ao invés de necessitar que isso seja adicionado de forma externa à estrutura de dados, como é feito em \cite{impact-semantic-web-2005}. Ao representar candidatos que não chegam perto do nível de proficiência desejado, ou que sabem o necessário, ou que sabem muito além de forma padronizada, outras possibilidades de interpretação se abrem sobre os candidatos, talvez optem por contratar somente aqueles que sabem o suficiente para não desperdiçar talento, ou somente contratar os que quase alcançaram o esperado para realizar algum treinamento, entre outros. Indo além do ramo de recrutamento, a medida pode ser utilizada para comparar duas variáveis ordinais utilizando uma como base, conseguindo representar relações menores que, iguais e maiores que.
+% <falar de learning to rank>
 
-Além da introdução, o artigo é dividido em quatro seções. A seção \ref{sec:sample2} apresenta os trabalhos relacionados sobre o ranqueamento de candidatos e o abordagens de como lidar com variáveis ordinais. Na seção \ref{sec:sample3}, a metodologia e formalização da medida são apresentadas, aprofundando no processo de criação e a funcionalidade de cada parte da medida. A seção \ref{sec:sample4} introduz alguns testes chaves e os analisa para averiguar a consistência da medida. Por fim, a seção \ref{sec:sample5} concluí o trabalho.
+% From the approaches without a holistic view 
 
-% \begin{itemize}
-% \item We then document substantial variation in
-% how managers appear to use job test recommendations: some tend to hire applicants with the best test scores while others appear to make many more exceptions. Across a range of specications, we show that hiring against test recommendations is associated with worse outcomes. \cite{NBERw21709}.
+Todas as abordagens tocam no problema de identificar o nível de proficiência do candidato em algum requisito e o comparar com o que é pedido na vaga, entretanto, nenhuma delas propõe uma medida específica para isso. Uma que fosse especializada em identificar candidatos que sabem menos, igual ou mais do que o necessário, que ponderasse os requisitos, que representasse o interesse da empresa de valorizar mais os candidatos que sabem além do esperado, e acima de tudo, uma simples.
 
-% \item Employers often receive a large number of applications for an open position, due to the strained situation of the labour market. The costs of manually preselecting potential candidates have risen and employers are searching for means to automate the preselection of candidate \cite{impact-semantic-web-2005}
+% com perguntas relacionada a presença de proficiência em algum requisito, entretanto, 
 
-% \item Artigos que discutem o ranqueamento:
-%   \begin{itemize}
-%   \item E-Gen: Automatic Job Offer Processing System for Human Resources \cite{e-gen-job-processing-2007}. Precede e compartilha 3 autores com o \cite{automatic-profiling-2008}. Implementa duas tarefas complexas: análise e categorização de vagas. Resolve a primeira parte , análise, enquanto o segundo artigo resolve a segunda, a categorização e ranking.
-  
-%   \item Automatic Profiling System for Ranking Candidates Answers in Human Resources \cite{automatic-profiling-2008}. Várias funcionalidades: análise e categorização de ofertas de vagas de documentos desformatados, uma análise e ranking de respostas de candidatos. A parte que nos interessa é o ranking, que é feito de forma semântica, uma sequência de termos do candidato e vaga. Testaram a medida de cosseno, minkwoskim overlap e okabis
-  
-%   \item Job Offer Management: How Improve the Ranking of Candidates \cite{improve-ranking-candidates-2009}. Mesmos autores do que \cite{automatic-profiling-2008, e-gen-job-processing-2007}. Transforma os textos da vaga e do candidato em um vetor de termos com seus respetivos pesos. Sem match.
-  
-  
-%   \item \textbf{The Impact of Semantic Web Technologies on Job Recruitment Processes} \cite{impact-semantic-web-2005}. Simplificação dos processos de recrutamento online pela utilização de tecnologias da web semântica. Para dar matching das vagas e dos perfils do candidatos, um matching semântico é utilizado. A similaridade é o resultado da distância de cada termo em sua posição hierárquica. Uma estrutura de árvore é utilizada. Calcula a similaridade conceitual e de proficiência, porém não é possível ter uma medida de cutoff, é um intervalo contínuo de 0 à 1, dado que todos os valores são positivos. Utiliza um conceito de ontologia de hierarquia, enquanto o nosso um de ranking. Sobre a proficiência, a nossa medida já infere com base na ordem no ranking.
-%   Foi criada uma medida de fit de vaga, onde é possível saber se o candidato sabe mais ou igual ao que esperado, porém, sempre resulta no mesmo resultado (0), para conhecimentos num nível abaixo do pedido na vaga. Contém uma constante para indicar o intervalo entre as classes, pois nem sempre precisa ser constante e é possível indicar pesos para diferentes requisitos. A diferença com a nossa medida é que a nossa não utiliza uma estrutra de árvore, e sim uma mais simples, não é necessário colocar mais um dado sobre o peso da medida, pois a sua posição no ranking já indica isso, não consegue representar um matching e tampouco o conceito de mérito.
-%   \end{itemize}
-  
-% \item \textbf{Proposta:} Uma medida simples para ranking de candidatos dado os seus conhecimentos e o que é necessário para a vaga, onde é presente o matching de atributos com os níveis de proficiência, a relação entre as classes é dinâmica, cada variável tem o seu próprio peso. Mérito também é presente.
-% \end{itemize}
+
+% All approaches can deal with questions regarding the presence of knowlege in some skills, however, when it comes to knowing how much or how little the candidate knows in each area the current approaches lack a solution. 
+
+Ao levar em consideração que o requisito é uma variável ordinal, i.e. sou um expert em pintura, e que as empresas exigem um nível de proficiência para cada requisito, perguntas como "qual é a capacidade desse candidato para o cargo?", "ele sabe menos do que é pedido?", "ele conhece requisitos que são valorizadas?", "ele está longe do mínimo necessário?" podem ser feitas, porque a ordem e a ponderação natural das variáveis ordinais são alavancadas. Diante disso, o problema reside em como calcular a similaridade para dados ordinais.
+
+
+% By taking into consideration that knowlegde is an ordinal variable, i.e. i am an expert in water paiting, and that companies require a kowledge level for each area, questions like "how over fitted is this candidate for the job?", "does he know less than what is asked for?", "does he know stuff that is valued?", "is he a no-go?" can be asked, because we use the order and the natural weighting of ordinal variables to our advantage, instead of treating like nominal variables. Given this, the problem resides on how to compute similarity for ordinal data.
+
+% Para calcular a similaridade de dados categóricos ordinais, a forma mais simples é a atribuição de valores para cada classe, porém, a dúvida central é se é possível realizar a conversão sem perder informações dos dados categóricos. Em 1970, \cite{assignment-rank-order-1970} calculou a correlação entre os dados ordinais e a atribuição de um valor linear e monotônico a cada um se manteve alta. Em 1973, \cite{ANDERBERG197325} também confirmou que a atribuição de valores para as classes tem resultados bons, traz ainda o caso de utilizar uma função além de linear, como $ln x$ e $e^x$, na conversão para melhor representar a relação entre as classes.
+
+\cite{analysis-cluster} apresenta uma forma de calcular a distância de dados ordinais, intervalares e fracionários com somente uma medida, porém ela não consegue representar as relações de magnitude entre as classes ao se manter entre 0 e 1. Mais para frente, em 1999, \cite{analysis-cluster} estende o coeficiente de Gower para dados ordinais, porém ainda pecando nas relações de magnitude e flexibilidade de atribuir pesos aos atributos. Os dois estudos trouxeram como base a estrutura da medida daqui utilizada.
+
+% Este trabalho apresenta uma medida simples de similaridade entre o candidato e vaga, onde cada conhecimento é uma variável categórica ordinal e cada nível de proficiência, uma possível classe da variável. Tem suporte a diferentes pesos de cada requisito por sua classificação no ranking, sendo uma variável ordinal, assim conseguindo distinguir entre níveis de proficiências. Introduz o conceito de mérito por requisito.
+Esse trabalho irá focar no cálculo de similaridade entre o candidato e uma vaga, propondo uma medida que consiga englobar a dinamicidade dos fatores que levam ao recrutamento, mas ao mesmo tempo sendo simples e passível de generalização. Aqui será suposto que as informações chaves do currículo do candidato já foram extraídas e que são inteiramente dados ordinais, onde cada requisito possui um nível de proficiência desejado pela empresa e o que o candidato tem. 
+
+% Todos os pontos levantados da medida proposta são parcialmente ou inexistente nos outros trabalhos. Ela consegue inferir com base na simples ordenação das classes (níveis de proficiência) de cada atributo (requisito) quais são os pesos, consegue se adaptar a casos onde a proficiência além do necessário de um candidato importa para o valor final, mas casos onde independe se a proficiência é além do esperado
+
+% . Consegue se adaptar a casos onde a empresa deseja relevar se o candidato sabe mais do que o necessário, mas também casos onde somente deseja saber se existe o conhecimento em algo (como se fosse um matching de palavras chaves).
+
+% Ao representar candidatos que não chegam perto do nível de proficiência desejado, ou que sabem o necessário, ou que sabem muito além de forma padronizada, outras possibilidades de interpretação se abrem sobre os candidatos, talvez optem por contratar somente aqueles que sabem o suficiente para não desperdiçar talento, ou somente contratar os que quase alcançaram o esperado para realizar algum treinamento, entre outros. Indo além do ramo de recrutamento, a medida pode ser utilizada para comparar duas variáveis ordinais utilizando uma como base, conseguindo representar relações menores que, iguais e maiores que.
+
+Além da introdução, o artigo é dividido em quatro seções. A seção \ref{sec:sample2} apresenta os trabalhos relacionados sobre o ranqueamento de candidatos e abordagens de como lidar com variáveis ordinais. Na seção \ref{sec:sample3}, a metodologia e formalização da medida são apresentadas, aprofundando no processo de criação e a funcionalidade de cada parte da medida. A seção \ref{sec:sample4} introduz alguns testes chaves e os analisa para averiguar a consistência da medida. Por fim, a seção \ref{sec:sample5} concluí o trabalho.
 
 \section{Trabalhos Relacionados}
 \label{sec:sample2}
 
-Para calcular a similaridade de um candidato e uma vaga de empresa, foram utilizados duas áreas de estudos, uma com o foco em recrutamento e a outra, em similaridade de dados ordinais, aprofundadas respectivamente nas seções \ref{ssec:sim-candidate-company} e \ref{ssec:sim-ordinal-data}.
-
+Para calcular a similaridade de um candidato e uma vaga de empresa, foram utilizados duas áreas de estudos, uma com o foco em recrutamento e a outra, em similaridade de dados ordinais, dado que neste trabalho as informações dos candidatos e vaga serão vistos como dados ordinais, assim interligando as duas áreas. Cada uma será aprofundada, respectivamente, nas seções \ref{ssec:sim-candidate-company} e \ref{ssec:sim-ordinal-data}. 
 
 \subsection{Ranqueamento de candidatos}
 \label{ssec:sim-candidate-company}
 
-A área de recrutamento online e os fatores humanos envolvidos trazem um desafio grande e são o objeto de estudo de diversos artigos na área de psicologia \cite{Chapman2005ApplicantAT, Hunter1990IndividualDI, Steel1984ARA} e computação \cite{poch-etal-2014-ranking, Singh2010PROSPECTAS, efficient-multifaceted, improve-ranking-candidates-2009, e-gen-job-processing-2007, mochol2006practical, impact-semantic-web-2005, automatic-profiling-2008, matching-field-relevance}. Recentemente, ênfase nos processos de matching e ranqueamento de candidatos estão surgindo por causa dos avanços de aprendizado de máquina e data mining. \cite{matching-field-relevance} investigaram o problema de matching de currículos semiestruturados com vagas de empresas reais utilizando \textit{relevance models}, e mesmo com melhorias alcançadas, reconhecem que essa tarefa ainda é difícil. 
+A área de recrutamento online e os fatores humanos envolvidos trazem um desafio grande e são o objeto de estudo de diversos artigos na área de psicologia \cite{Chapman2005ApplicantAT, Hunter1990IndividualDI, Steel1984ARA} e computação \cite{poch-etal-2014-ranking, Singh2010PROSPECTAS, improve-ranking-candidates-2009, e-gen-job-processing-2007, mochol2006practical, impact-semantic-web-2005, automatic-profiling-2008, matching-field-relevance}. Recentemente, ênfase nos processos de matching e ranqueamento de candidatos estão surgindo por causa dos avanços de aprendizado de máquina e data mining. \cite{matching-field-relevance} investigaram o problema de matching de currículos semiestruturados com vagas de empresas reais utilizando \textit{relevance models}, e mesmo com melhorias alcançadas, reconhecem que essa tarefa ainda é difícil. 
 
-Abordagens utilizando somente a similaridade de palavras chaves limitam a análise de recrutadores, assim, propostas de sistemas inteligentes, como o PROSPECT \cite{Singh2010PROSPECTAS} que extraí informações chaves de currículos e propõe uma série de fatores para a análise, levando em consideração a experiência de em cada requisito, educação, experiência passada e outros detalhes. Outras abordagens, como a do uso de filtros colaborativos para recomendar candidatos dado uma vaga \cite{needle-haystack-recommender-systems} foram estudadas também. 
+Abordagens utilizando somente a similaridade de palavras chaves limitam a análise de recrutadores, assim, propostas de sistemas inteligentes, como o Prospect \cite{Singh2010PROSPECTAS} que extraí informações chaves de currículos e propõe uma série de fatores para a análise, levando em consideração a experiência de em cada requisito, educação, experiência passada e outros detalhes. Outras abordagens, como a do uso de filtros colaborativos para recomendar candidatos dado uma vaga \cite{needle-haystack-recommender-systems} foram estudadas também. 
 
-\cite{e-gen-job-processing-2007} desenvolveu o E-Gen, similar à proposta do PROSPECT. \cite{automatic-profiling-2008} continuou o trabalho e focou somente na categorização de vagas e processamento. \cite{improve-ranking-candidates-2009} construiu em cima do \cite{e-gen-job-processing-2007} para enfatizar e aprofundar no ranqueamento de candidatos. \cite{impact-semantic-web-2005} estuda o impacto de tecnologias da web semântica em processos de recrutamento, apresentando uma forma de calcular a similaridade entre a vaga e o currículo com base em preceitos semânticos.
+\cite{e-gen-job-processing-2007} desenvolveu o E-Gen, similar à proposta do Prospect. \cite{automatic-profiling-2008} continuou o trabalho e focou somente na categorização de vagas e processamento. \cite{improve-ranking-candidates-2009} propõe uma forma de determinar a similaridade do candidato com a vaga por meio de medidas como Coseno, Minkwoskim e Overlap onde os objetos são vetores de textos das palavras chaves dos currículos e vagas. A comparação é feita de forma semântica de conhecimentos, independente dos níveis de proficiência. Portanto, a pergunta se o candidato sabe mais do que o necessário não pode ser respondida, e sim somente a se ele sabe algo.
 
-\cite{improve-ranking-candidates-2009} propõe uma forma de determinar a similaridade do candidato com a vaga por meio de medidas como Coseno, Minkwoskim e Overlap onde os objetos são vetores de textos das palavras chaves dos currículos e vagas. A comparação é feita de forma semântica de conhecimentos, independente dos níveis de proficiência. Portanto, a pergunta se o candidato sabe mais do que o necessário não pode ser respondida, e sim somente a se ele sabe algo.
 
-Já a pesquisa de \cite{impact-semantic-web-2005} utiliza de matching semântico para calcular a similaridade, indo além de somente utilizar palavras chaves. Com a estrutura hierárquica, consegue lidar com generalizações e especificações, e a distância entre os nós é relacionada à similaridade. A medida desenvolvida também consegue especificar qual é o nível de proficiência desejado em cada conhecimento e comparar com o nível do candidato, porém, não é possível determinar por meio do valor final, juntando todos os conhecimentos, o fato se o candidato sabe menos, igual ou mais do que o desejado para a vaga, porque não segue uma convenção de intervalo, o que é uma das propostas da medida apresentada neste projeto.
+% \cite{improve-ranking-candidates-2009} construiu em cima do \cite{e-gen-job-processing-2007} para enfatizar e aprofundar no ranqueamento de candidatos. 
+
+% \cite{impact-semantic-web-2005} estuda o impacto de tecnologias da web semântica em processos de recrutamento, apresentando uma forma de calcular a similaridade entre a vaga e o currículo com base em preceitos semânticos.
+
+
+Já a pesquisa de \cite{impact-semantic-web-2005} utiliza de matching semântico para calcular a similaridade, indo além de somente utilizar palavras chaves. Com a estrutura hierárquica, consegue lidar com generalizações e especificações, e a distância entre os nós é relacionada à similaridade. A medida desenvolvida também consegue especificar qual é o nível de proficiência desejado em cada requisito e comparar com o nível do candidato, porém, o valor de similaridade final somente engloba a maior similaridade das encontradas dos requisitos, assim não representando fielmente todas as proficiências do candidato. 
+
+Um ponto não presente em nenhuma das literaturas é o que chamamos neste trabalho de mérito, ou seja, a valorização das competências que são acima do esperado na vaga. Queremos representar a escolha da empresa de se importar com o fato do candidato saber mais do que o necessário em algo, para suportar cenários onde somente o fato que o candidato sabe o mínimo necessário é suficiente. Desta forma, o mérito é uma ferramenta para diferentes formas de análise de requisitos dos candidatos, suportando empresas que se importam somente se aquele conhecimento existe e empresas que se importam com o nível de proficiência alcançada.
+
+% não é possível determinar por meio do valor final, juntando todas as proficiências de cada requisito, o fato se o candidato sabe menos, igual ou mais do que o desejado para a vaga. 
+
+% O peso atribuído a cada requisito é sempre um dado a ser incluído pelo usuário, sendo que neste trabalho, a ordem inerente de variáveis ordinais é alavancada e utilizada para inferir um peso para cada requisito dado o nível de proficiência exigido pela empresa na vaga.
+
+
+% porque não segue uma convenção de intervalo, o que é uma das propostas da medida apresentada neste projeto.
+
+% A proposta de \cite{impact-semantic-web-2005} é a que mais se assemelha ao intuito desta pesquisa, uma forma de calcular a similaridade entre candidato e vaga em cada requisito, com a possibilidade de ponderações, comparações de níveis de proficiência, 
 % A similaridade entre candidato e empresa é empregada principalmente nos processos de triagem automática de candidatos, onde depois de extrair as informações chaves do currículo, calcula a similaridade com a da vaga. 
 
-
-\subsection{Similaridade de dados categóricos ordinais}
+\subsection{Similaridade de dados ordinais}
 \label{ssec:sim-ordinal-data}
 
-A forma mais intuitiva de calcular a similaridade de dados ordinais é na atribuição de valores para cada classe do rank e calcular a distância. Labovitz (1967) \cite{labovitz-1967-observation-statistics} sugere o uso de valores de ranks para cada classe, e mais tarde (1970), justifica a técnica por meio da correlação entre os dados reais e as sequencias de valores de classes ordenáveis. Nesse estudo, \cite{assignment-rank-order-1970}, atribui valores randômicos e não randômicos para classes de variáveis ordinais, seguindo a natureza monotônica das classes, e confirma que valores ordinais podem ser tratados como intervalares. 18 sistemas de valores para classes foram gerados por um computador e resultaram em uma correlação que, no pior caso, chega a 0.97, quando comparados com o sistema real de valores, ou seja, um erro negligenciável. No caso onde a relação entre as classes não possa ser representada por um valor linear, outras funções de conversões, como $ln x$ e $e^x$, podem ser utilizadas.
+Talvez a forma mais intuitiva de calcular a similaridade de dados ordinais é na atribuição de valores do lugar de cada classe, com o intuito de utilizá-los em alguma operação matemática. Labovitz (1967) \cite{labovitz-1967-observation-statistics} sugere essa técnica e mais tarde (1970) \cite{assignment-rank-order-1970} a justifica com base na correlação atingida entre os dados reais e as sequências de valores de classes ordenáveis. Atribuindo valores randômicos e não randômicos para classes de variáveis ordinais, porém seguindo a natureza monotônica das classes, confirmou que valores ordinais podem ser tratados como intervalares. O método consiste em 18 sistemas de valores para classes gerados por um computador e que resultaram em uma correlação que, no pior caso, chega a 0.97, ou seja, um erro negligenciável. 
+
+Os valores por Labovitz \cite{assignment-rank-order-1970} mesmo que randômicos, eram aproximadamente lineares, porém, no caso onde a relação entre as classes não possa ser representada por um valor linear, outras funções de conversões, como $ln x$ e $e^x$, podem ser utilizadas \cite{assignment-rank-order-1970}.
 
 \cite{analysis-cluster} propôs uma medida de similaridade para dados ordinais, intervalares e fracionários, onde os ordinais são substituídos por seus valores de classes e tratados como intervalares. Calcula-se a distância normalizada entre dois objetos, $x_{ik}$ e $x_{jk}$, como em \ref{eqn:all-data-distance} e posteriormente, soma-se todas as distâncias e as pondera com o peso, $w_{ijk}$, de 0 ou 1, demonstrado pela equação \ref{eqn:all-data-sim}.
 
@@ -251,7 +261,7 @@ A forma mais intuitiva de calcular a similaridade de dados ordinais é na atribu
     S_{ij} = 1 - \frac{\sum^n_{i=1} w_{ijk} \cdot d_{ijk}}{\sum^n_{i=1} w_{ijk}}
 \end{equation}
 
-A similaridade se mantém entre 0 e 1. 0 representando nenhuma similaridade e 1, uma total similaridade entre os objetos. Depois, em 1999, Podani \cite{extending-gower-ordinal} apresenta uma extensão da medida de similaridade de Gower para dados ordinais, a equação \ref{eqn:gower-S}, resultando numa medida similar e no contida no mesmo intervalo de \cite{analysis-cluster}. São duas diferenças principais, uma na aplicação da medida, que para Podani, era para somente dados ordinais e a outra na maneira de calcular a similaridade final de todos os atributos do objeto. Ao invés de ter uma peso $w_{ijk}$, a média aritmética é realizada.
+A similaridade se mantém entre 0 e 1, com 0 representando nenhuma similaridade e 1, uma total similaridade entre os objetos. Depois em 1999, Podani \cite{extending-gower-ordinal} apresenta uma extensão da medida de similaridade de Gower para dados ordinais (equação \ref{eqn:gower-S}) resultando numa medida similar a \cite{analysis-cluster}. São duas diferenças principais, uma na aplicação da medida, que para Podani, era para somente dados ordinais e a outra na maneira de calcular a similaridade final de todos os atributos do objeto. Ao invés de ter uma peso $w_{ijk}$, a média aritmética é realizada.
 
 \begin{equation}
 \label{eqn:gower-s}
@@ -263,7 +273,7 @@ A similaridade se mantém entre 0 e 1. 0 representando nenhuma similaridade e 1,
     S_{ij} =  1 - \frac{1}{n}\sum^n_{i=1}s_{ijk}
 \end{equation}
 
-Tanto Labovitz e Podani sugerem medidas de similaridade para dados ordinais, entretanto, nenhuma delas representa as relações de magnitude entre as classes. Suponha que a similaridade entre 1 e 2, e 3 e 2 seja realizado, ambas terão os mesmos resultados, 1, porém, neste trabalho é necessário que o primeiro caso resulte em -1 e o segundo, em 1, ou seja, não somente o quão próximo está, mas sim por qual direção.  
+Tanto Labovitz e Podani sugerem medidas de similaridade para dados ordinais, entretanto, nenhuma delas representa as relações de magnitude entre as classes. Suponha que a similaridade entre 1 e 2, e 3 e 2 seja realizado, ambas terão os mesmos resultados, 1, porém, neste trabalho é necessário que o primeiro caso resulte em -1 e o segundo, em 1, ou seja, não somente o quão próximo está, mas sim se é menor ou maior.
 % A distância, $d_{ijk}$, se dá pelo módulo da distância entre o valor do atributo de um objeto, $x_{ik}$, com o outro a ser comparado, $x_{jk}$, normalizado pelo maior e menor valor da variável. A similaridade
 
 % \begin{itemize}
@@ -346,19 +356,17 @@ Tanto Labovitz e Podani sugerem medidas de similaridade para dados ordinais, ent
 
 \subsection{Descrição do problema}
 
-Uma empresa abre uma vaga de emprego com os requisitos e as proficiências, e vários candidatos aparecerem, resultando no trabalho maçante de um gerente de ranquear os perfis mais aderentes à vaga. Neste contexto, a medida proposta tem o objetivo de ranquear os candidatos, o auxiliando no processo.
+Suponha que exista candidatos com proficiências em requisitos e uma vaga de empresa que dita as proficiências desejadas nestes requisitos, qual a melhor forma de saber se um candidato está adequado para a vaga? A empresa deseja que exista pesos para cada requisito, para que consiga relevar uns sobre outros, deseja saber se um candidato sabe menos, igual ou mais do que a vaga pede, mas ao mesmo tempo, deseja ter a possibilidade de ignorar o fato que o candidato sabe mais do do que o necessário, e sim que somente sabe o necessário. Com isso, propõe-se uma medida de similaridade entre candidato e vaga que consiga lidar com esses cenário.
 
-% Assim, nesta seção, a medida será incrementalmente construída, cada passo conseguinte adicionando um novo requisito à medida.
-
-Neste trabalho, requisitos e suas proficiências são variáveis categóricas ordinais, e.g. avançado em Word e iniciante em espanhol. Na medida proposta, requisito é denominado de atributo e a proficiência, o valor do atributo. A forma mais intuitiva para ranquear um objeto é atribuindo valores numéricos à cada atributo, que formalmente denomina-se de uma conversão de dados ordinais para intervalares, para que então possa ser realizada alguma operação matemática. A subseção \ref{sssec:ordinal-interval} irá aprofundar nesse ponto.
+Neste trabalho, requisitos são variáveis ordinais e denominados de atributos, e.g., Word, e a proficiência, o valor do atributo, e.g., avançado. A forma mais intuitiva para calcular a similaridade entre dados ordinais é atribuindo um valor numérico à cada proficiência, ou seja, os convertendo para dados intervalares, e tirando a diferença de um com outro. A subseção \ref{sssec:ordinal-interval} irá aprofundar nesse ponto.
 
 O problema também pressupõe que o "espaçamento" entre os níveis de proficiência não são constantes. Supondo que há três níveis de proficiência de um requisito, iniciante, intermediário e avançado, e que a cada nível seja atribuído um número representando a sua posição na ordem, iniciando em 0. Contratar uma pessoa avançada (2) não se iguala na prática ao contratar duas intermediárias (1), portanto, para o matching de proficiências de cada requisito, as proficiências são convertidas em números e dados como entrada de uma função quadrática. 
 
-O matching de proficiência mantém as relações "menor que", "igual" e "maior que" entre a vaga e o candidato, porque, diferentemente de medidas de similaridades existentes, somente o fato que proficiência está perto do necessário, independente se é maior ou menor, não resolve o problema. A subseção \ref{sssec:matching} irá aprofundar nesse ponto.
+O matching de proficiência mantém as relações de magnitude, "menor que", "igual" e "maior que", entre a vaga e o candidato, diferentemente de medidas de similaridades existentes onde somente o fato que a proficiência está perto do necessário é utilizado, independente se é maior ou menor. A subseção \ref{sssec:matching} irá aprofundar nesse ponto.
 
 Outro fator é a relevância de cada requisito para a vaga, por exemplo, Word tem preferência sobre Excel. Isso é possível pela atribuição de pesos para cada atributo e será aprofundado na subseção \ref{sssec:weights}.
 
-Por fim, no contexto de recrutamento, é possível não relevar se um candidato sabe mais que algo esperado e, sim, simplesmente que sabe. Desta forma, a medida tem capacidade de representar a valorização ou não dos proficiência além do necessário pela vaga, o mérito. A subseção \ref{sssec:merit} irá aprofundar nesse ponto.
+Por fim, no contexto de recrutamento, é possível não se importar se um candidato sabe mais em um requisito do que algo esperado e, sim, simplesmente que sabe. Desta forma, a medida tem capacidade de representar a valorização, ou não, das proficiência além do necessário pela vaga, denominado como sso mérito. A subseção \ref{sssec:merit} irá aprofundar nesse ponto.
 
 % O primeiro passo seria atribuir um número correspondente ao nível de proficiência para cada candidato e depois escolher os N maiores. 
 
@@ -373,7 +381,7 @@ Por fim, no contexto de recrutamento, é possível não relevar se um candidato 
 
 \subsubsection{Ordinal para intervalar}
 \label{sssec:ordinal-interval}
-Cada nível de proficiência de um conhecimento, $k$, é transformado em sua posição no vetor de ranking, $r_k$, iniciando em 0.
+Cada nível de proficiência de um requisito, $k$, é transformado em sua posição no vetor de ranking, $r_k$, iniciando em 0.
     
 $$\\k = \{ \text{iniciante}, \text{intermediário}, \text{avançado} \}$$ 
 $$ \therefore r_k = \{ 0, 1, 2 \} $$
@@ -382,14 +390,14 @@ Qualquer referência à proficiência na medida irá utilizar os valores interva
 
 \subsubsection{Matching de proficiências de cada requisito}
 \label{sssec:matching}
-Uma escala quadrática para representar as relações entre os níveis de proficiência foi escolhida, porque melhor representa as relações entre eles. Para saber se, dado um requisito, o nível de proficiência é menor, igual ao maior do que o necessário, é realizada um simples matching de diferença, $m_{ijk}$, entre a proficiência do candidato, $r_{ik}$, e a proficiência desejada pela empresa, $r_{jk}$, definida pela equação \ref{eqn:no-normalized-match}.
+Uma escala quadrática para representar as relações entre os níveis de proficiência foi escolhida. Para saber se, dado um requisito, o nível de proficiência é menor, igual ao maior do que o necessário, é realizada uma simples diferença, denominado de valor de matching, $m_{ijk}$, entre a proficiência do candidato, $r_{ik}$, e a proficiência desejada pela empresa, $r_{jk}$, definida pela equação \ref{eqn:no-normalized-match}.
     
 \begin{equation}
 \label{eqn:no-normalized-match}
    m_{ijk} = r_{ik}^2 - r_{jk}^2
 \end{equation}
 
-Como cada requisito pode ter diferentes níveis de proficiências, é realizado uma normalização com cada requisito com o maior valor possível da proficiência, $max(r_k)$, resultando na equação \ref{eqn:normalized-merit}.
+Como cada requisito pode ter diferentes níveis de proficiências, é realizado uma normalização com o maior valor possível da proficiência, $max(r_k)$, resultando na equação \ref{eqn:normalized-merit}.
     
 \begin{equation}
 \label{eqn:normalized-merit}
@@ -402,9 +410,9 @@ Onde
 m_{ijk} \in [-1, 1]
 \end{equation}
 
-Se $m_{ijk}$ for entre -1 e 0, significa que a proficiência do candidato naquele requisito é menor do que o necessário para a vaga. Caso seja 0, é exatamente o necessário e caso seja entre 0 e 1, além.
+Se $m_{ijk}$ for entre -1 e 0, significa que a proficiência do candidato naquele requisito é menor do que o necessário para a vaga. Caso seja 0, é exatamente o necessário e caso seja entre 0 e 1, é além.
 
-Para alcançar um valor final de similaridade, a média entre os matches é feito, por enquanto, resultando na medida \ref{eqn:average-sim}.
+Por enquanto, para alcançar um valor final de similaridade, a média aritmética entre os matches é feito, resultando na medida \ref{eqn:average-sim}.
 
 \begin{equation}
 \label{eqn:average-sim}
@@ -416,29 +424,28 @@ S_{ij} =  \frac{\sum_{k=1}^n m_{ijk}}
 
 \subsubsection{Pesos para cada requisito}
 \label{sssec:weights}
-No item anterior, não é contabilizado os pesos de cada requisito. Ao atribuir pesos o problema de valorização uniforme de requisitos é resolvido.
+
+% Ao atribuir pesos o problema de valorização uniforme de requisitos é resolvido.
 
 % \begin{itemize}
 %   \item Balanceamento por mismatching
     % Queremos evitar o cenário onde um candidato A tem as mesmas proficiência em dois requisitos que o candidato B, mas em requisitos opostos, como se soubesse avançado quando se pede iniciante e iniciante quando se pede avançado, ao invés de iniciante quando iniciante, e avançado quando avançado. O set de níveis de proficiência são os mesmos, então poderia fazer sentido ambos terem os mesmos valores de similaridade. Entretanto, isso não é a correta interpretação, o candidato B tem um mismatch alto em um atributo ao saber iniciante quando avançado é pedido, e portanto deve ser penalizado por isso, assim, o peso dos conhecimentos sendo introduzido resolverá esse problema.
    
 %   \item Valorização uniforme de requisito
-A premissa é que o peso/valorização do requisito se dá pelo nível de proficiência que lhe é exigido. Quando se pede básico em algo, a valorização do requisito será menor do que de um que, por exemplo, se pede avançado, porque, intuitivamente, valorizamos mais o que é mais difícil e menos o que é mais fácil.
+No item anterior, não é contabilizado os pesos de cada requisito. A premissa é que o peso/valorização do requisito se dá pelo nível de proficiência que lhe é exigido. Quando se pede básico em algo, a valorização será menor do que de um que, por exemplo, se pede avançado, porque, intuitivamente, valoriza-se mais o que é mais difícil e menos o que é mais fácil. Entretanto, isso resulta em casos onde uma proficiência muito pequena em um requisito muito valorizado gera um match pequeno (ou mismatch alto), menor do que se fosse saber pouco em um requisito de pouca importância. Por exemplo, supondo que uma empresa, $E$, necessite proficiências nos requisitos Word e Excel, com níveis de proficiência, respectivamente, avançado (2) e iniciante (0). Dado um candidato $A$, que sabe avançado (2) em Word e básico (1) em Excel, e um B, que sabe básico (1) em Word e avançado (2) em Excel.
 
-Entretanto, isso resulta em casos onde dado uma proficiência muito pequena em um requisito muito valorizado, o mismatch se torna maior do que ao saber pouco em um requisito de pouca importância. Por exemplo, supondo que uma empresa, $E$, necessite proficiências nos requisitos Word e Excel, com níveis de proficiência, respectivamente, avançado e básico. Dado um candidato $A$ que sabe avançado em Word e básico em Excel, e um B que sabe básico em Word e avançado em Excel. Os seguintes valores de similaridade são alcançados:
 
-$$ S_{A,E} = \frac{\tfrac{4 - 4}{4} + \tfrac{0 - 0}{4}}{2} = \frac{0 + 0}{2} =  0 $$
-$$ S_{B,E} = \frac{\tfrac{0 - 4}{4} + \tfrac{4 - 0}{4}}{2} = \frac{-1 + 1}{2} =  0 $$
+$$ O = \{ \text{proficiência Word}, \text{proficiência Excel} \} $$
+$$ \text{Empresa } E = \{ \text{avançado}, \text{iniciante} \} = \{ 2, 0 \} $$
+$$ \text{Candidato } A = \{ \text{avançado}, \text{básico} \} = \{ 2, 1 \} $$
+$$ \text{Candidato } B = \{ \text{básico}, \text{avançado} \} = \{ 1, 2 \} $$
 
-O problema reside na simples média aritmética, dado que o valor final de ambos é o mesmo, 0, quando não deveria ser, pois o candidato B é básico em Word sendo que é necessário saber avançado, portanto, a soma deve ser ponderada pelo peso dos requisitos. A ponderação é igual ao nível de proficiência desejado do requisitos no vetor de rankings mais 1, com isso, temos as seguintes novas similaridades:
+Os seguintes valores de similaridade são alcançados:
 
-$$ S_{A,E} = \frac{\tfrac{4 - 4}{4} \cdot \boldsymbol{(\tfrac{2}{2} + 1)} + \tfrac{0 - 0}{4} \cdot \boldsymbol{(\tfrac{0}{2} + 1)}}{(\boldsymbol{\tfrac{2}{2} + 1)} + \boldsymbol{(\tfrac{0}{2} + 1)}} = \frac{0 + 0}{3} = 0 $$
+$$ S_{A,E} = \frac{\tfrac{2^2 - 2^2}{2^2} + \tfrac{1^2 - 0^2}{2^2}}{2} = \frac{0 + \tfrac{1}{4}}{2} =  0.125 $$
+$$ S_{B,E} = \frac{\tfrac{1^2 - 2^2}{2^2} + \tfrac{2^2 - 0^2}{2^2}}{2} = \frac{-\tfrac{3}{4} + \tfrac{4}{4}}{2} = 0.125 $$
 
-$$ S_{B,E} = \frac{\tfrac{0 - 4}{4} \cdot (\boldsymbol{\tfrac{2}{2} + 1)} + \tfrac{4 - 0}{4} \cdot (\boldsymbol{\tfrac{0}{2} + 1)}}{(\boldsymbol{\tfrac{2}{2} + 1)} + \boldsymbol{(\tfrac{0}{2} + 1)}} = \frac{-2 + 1}{3} = -0.333 $$
-
-% \end{itemize}
-
-Generalizando a definição dos pesos resulta em \ref{eqn:weight}. 
+Nota-se que ambos os valores são 0.125, entretanto, o candidato $B$ deveria ter um valor menor porque sabe mais em um requisito menos valorizado (Excel) e menos no mais valorizado (Word). Isso pode ser resolvida com uma ponderação na média, utilizando como o peso, $w_{jk}$, o valor da classe de cada proficiência desejada pela empresa em cada requisito. 
 
 \begin{equation}
 \label{eqn:weight}
@@ -451,9 +458,20 @@ Onde
 1 \leq w_{jk} \leq 2
 \end{equation}
 
-Ao se manter no intervalo de 1 a 2, ao invés de 0 a 1, não há problema de divisão por 0 caso todas as proficiências dos requisitos da vaga são os menores possíveis.
+Ao se manter no intervalo de 1 a 2, ao invés de 0 a 1, não há problema de divisão por 0 caso todas as proficiências dos requisitos da vaga são os menores possíveis (valor de classe 0).
 
-Com isso, ao invés da simples média aritmética entre os valores do matches, feito na medida \ref{eqn:average-sim}, utiliza-se da média ponderada, resultando na medida \ref{eqn:weighted-sim}.  
+Desta forma, ao invés da simples média aritmética entre os valores do matches, feito na medida \ref{eqn:average-sim}, utiliza-se da média ponderada, resultando na medida \ref{eqn:weighted-sim}. 
+
+Abaixo, em negrito, encontra-se os pesos de cada requisito incorporados no exemplo anterior.
+
+$$ S_{A,E} = \frac{\tfrac{2^2 - 2^2}{2^2} \cdot \boldsymbol{(\tfrac{2}{2} + 1)} + \tfrac{1^2 - 0^2}{2^2} \cdot \boldsymbol{(\tfrac{0}{2} + 1)}}{\boldsymbol{(\tfrac{2}{2} + 1)} + \boldsymbol{(\tfrac{0}{2} + 1)}} = \frac{0 \cdot \textbf{2} + \tfrac{1}{4} \cdot \textbf{1}}{\textbf{3}} = 0.083 $$
+
+$$ S_{B,E} = \frac{\tfrac{1^2 - 2^2}{2^2} \cdot \boldsymbol{(\tfrac{2}{2} + 1)} + \tfrac{2^2 - 0^2}{2^2} \cdot \boldsymbol{(\tfrac{0}{2} + 1)}}{\boldsymbol{(\tfrac{2}{2} + 1)} + \boldsymbol{(\tfrac{0}{2} + 1)}} = \frac{-\tfrac{3}{4} \cdot \textbf{2} + \tfrac{4}{4} \cdot \textbf{1}}{\textbf{3}} = -0.166 $$
+
+% \end{itemize}
+Agora, ao invés do candidato A e B terem o mesmo valor de similaridade, o A tem um valor maior, 0.083, e o B, menor, -0.166, como esperado.
+
+Desta forma, incorporando os pesos na medida resulta em \ref{eqn:weight}. 
 
 \begin{equation}
 \label{eqn:weighted-sim}
@@ -466,21 +484,21 @@ S_{ij} = \frac{\sum_{k=1}^n m_{ijk} \cdot w_{jk}}
 \subsubsection{Mérito}
 \label{sssec:merit}
 
-A definição de mérito é algo subjetivo, mas que nesse trabalho é definido como a valorização da proficiência que é além do esperado do candidato em algum requisito, por exemplo, saber avançado quando somente intermediário é suficiente. 
+A definição de mérito é algo subjetivo, mas que nesse trabalho é definido como a valorização da proficiência que é além do esperado do candidato em algum requisito, por exemplo, saber avançado quando somente intermediário é suficiente para a vaga. 
 
 Representar o cenário onde não é relevante se alguém sabe mais do que o mínimo necessário, mas sim somente que já sabe, é um dos objetivos da medida. Não relevar as proficiências a mais significa que o candidato não terá mérito naquele requisito, implicando em um valor fixo de match. A medida utiliza do conceito de  aritmética de saturação, do inglês \textit{saturation arithmetic}, para representar a ausência do mérito. Aritmética de saturação é o ato de se manter num intervalo independente se as operações, como adição e subtração, produzirem valores menores ou maiores do que o limite do intervalo.
 
-Se não houver do mérito, todas as proficiências acima do que o esperado terão o mesmo resultado do que as iguais ao esperado. Por exemplo, dado que a empresa $E$ não dá mérito ao Word, pede nível intermediário e que existem dois candidatos, A e B, que têm proficiência intermediária e avançado, a similaridade final de ambos será 0.
+Se não houver mérito, todas as proficiências acima do esperado terão o mesmo resultado do que as iguais ao esperado, por exemplo, dado que a empresa $E$ não dá mérito ao Word, pede nível intermediário e que existem dois candidatos, A e B, que têm, respectivamente, proficiência intermediária e avançada, a similaridade final de ambos será 0.
 
 Na fórmula de similaridade isto será representado pela constante $c_{k}$ (em negrito nas contas abaixo), onde dado que a proficiência do candidato em certo requisito é maior ou igual do que o necessário, se a empresa não considerar o mérito, terá o valor de 0, caso contrário, 1.
 
-Utilizando do cenário anterior, onde não se valoriza o mérito, obtemos:
+Utilizando do cenário anterior, onde não se valoriza o mérito, é obtido:
 
-$$ S_{A,E} = \frac{\tfrac{1 - 1}{4} \cdot (\tfrac{1}{2} + 1) \cdot \textbf{0}}
+$$ S_{A,E} = \frac{\tfrac{1^2 - 1^2}{2^2} \cdot (\tfrac{1}{2} + 1) \cdot \textbf{0}}
                   {\tfrac{1}{2} + 1}
            = 0 \cdot \textbf{0} = 0 $$
 
-$$ S_{A,E} = \frac{\tfrac{4 - 1}{4} \cdot (\tfrac{1}{2} + 1) \cdot \textbf{0}}
+$$ S_{A,E} = \frac{\tfrac{2^2 - 1^2}{2^2} \cdot (\tfrac{1}{2} + 1) \cdot \textbf{0}}
                   {\tfrac{1}{2} + 1}
            = \frac{3}{4} \cdot \textbf{0} = 0 $$
 
@@ -587,7 +605,7 @@ Dado que não há outra medida que faça o que está sendo proposto, a avaliaç�
 
 Todos os cenários exploram uma característica da medida e foram extraídos das tabelas \ref{table:merit-1-all}, \ref{table:merit-0-all} e \ref{table:merit-0-and-1}. As tabelas comparam as proficiências de candidatos  (colunas), $C$, e vagas de empresas (linhas), $E$, em dois requisitos, que são as tuplas ordenadas de proficiências, resultando num valor de similaridade. As proficiências das tabelas já foram convertidas para cada valor no vetor de ranking, portanto, 0 representa iniciante, 1, intermediário e 2, avançado. 
 
-Uma exemplo de comparação ajudará no entendimento. Calculando a similaridade entre uma empresa com proficiências (0, 1) e um candidato com (2, 0), $S_{E,C}$, significa que, no primeiro requisito a empresa necessita de proficiência iniciante, 0, e no segundo, de intermediário, 1. Já o candidato tem proficiência avançada, 2, no primeiro requisito e iniciante, 0, no segundo. 
+Uma exemplo de comparação ajudará no entendimento. Calculando a similaridade entre uma empresa com proficiências (0, 1) e um candidato com (2, 0), $S_{C,E}$, significa que, no primeiro requisito a empresa necessita de proficiência iniciante, 0, e no segundo, de intermediário, 1. Já o candidato tem proficiência avançada, 2, no primeiro requisito e iniciante, 0, no segundo. 
 
 Abaixo se encontram os cenários escolhidos.
 
@@ -676,7 +694,35 @@ Foi utilizado a tabela \ref{table:merit-1-all} como referência.
 
 Observando os resultados do caso 1 e 2, concluí-se que a hipótese é válida.
 
-\begin{table}[htp]
+
+
+\section{Conclusão e Trabalhos Futuros}
+\label{sec:sample5}
+% \begin{itemize}
+% \color{blue}
+% \item Resumir a proposta do artigo
+% \item Ressaltar a principais repercussões da métrica 
+% \item Ressaltar as limitações da métrica
+% \item Trabalhos futuros consistentes.
+% \end{itemize}
+
+Esse trabalho propõe uma nova medida de similaridade aplicada ao ranqueamento de candidatos, onde as proficiências de um candidato em requisitos são comparados às proficiências pedidas pela empresa. Os requisitos são variáveis ordinais e os seus valores, uma possível proficiência. 
+
+O resultado final mantém as relações de magnitude, "menor que", "igual" e "maior que", entre a proficiência do candidato e da empresa, porque não basta somente saber que o candidato sabe próximo do necessário, mas sim o quanto sabe. Para que isso seja possível, os valores dos dados ordinais são convertidos em intervalares por uma função que melhor representa a relação de distância entre as proficiências, e cada valor numérico do requisito será o seu peso na medida. Por fim, o conceito de mérito, a ato de valorizar as proficiências além do necessário para empresa, é incorporado na medida.
+
+Com essa medida, será possível ranquear candidatos com o fim de diminuir o trabalho manual de empresas, sendo aplicada principalmente em sistemas de processamento de currículos e no cálculo das respostas de testes de candidatos. Além do contexto de recrutamento, a medida pode ser aplicada a dados ordinais em cenários onde a similaridade e as relações de magnitude entre as classes deve ser mantida.
+
+Algumas limitações da medida consistem na inabilidade de lidar com dados além dos ordinais, assim restringindo a sua aplicação onde há uma diversificação de dados. Por isso, trabalhos futuros podem se encarregar de generalizar a medida, mas além disso, também podem expandir a aplicação da medida, indo além do contexto do recrutamento, talvez utilizando a medida para calcular a similaridade em problemas de clusterização e recomendação. 
+
+
+\bibliographystyle{elsarticle-num} 
+\bibliography{cas-refs}
+
+%% The Appendices part is started with the command \appendix;
+%% appendix sections are then done as normal sections
+\appendix
+\section{Dados}
+\begin{table}[h]
 \caption{Todos os requisitos com mérito}
 \label{table:merit-1-all}
 \centering
@@ -694,12 +740,9 @@ C\textbackslash E & \{0,0\} & \{0,1\} & \{0,2\} & \{1,0\} & \{1,1\} & \{1,2\} & 
 \{2,2\} & 1 & 0.85 & 0.333 & 0.85 & 0.75 & 0.321 & 0.333 & 0.321 & 0 \\
 \bottomrule
 \end{tabular}
-\end{table}
 
-\begin{table}[htp]
 \caption{Somente o primeiro requisito com mérito}
 \label{table:merit-0-and-1}
-\centering
 \begin{tabular}{@{}llllllllll@{}}
 \toprule
 C\textbackslash E & \{0,0\} & \{0,1\} & \{0,2\} & \{1,0\} & \{1,1\} & \{1,2\} & \{2,0\} & \{2,1\} & \{2,2\} \\ \midrule
@@ -713,12 +756,9 @@ C\textbackslash E & \{0,0\} & \{0,1\} & \{0,2\} & \{1,0\} & \{1,1\} & \{1,2\} & 
 \{2,1\} & 0.5 & 0.4 & -0.167 & 0.45 & 0.375 & -0.107 & 0 & 0 & -0.375 \\
 \{2,2\} & 0.5 & 0.4 & 0.333 & 0.45 & 0.375 & 0.321 & 0 & 0 & 0 \\ \bottomrule
 \end{tabular}
-\end{table}
 
-\begin{table}[htp]
 \caption{Nenhum requisito com mérito}
 \label{table:merit-0-all}
-\centering
 \begin{tabular}{@{}llllllllll@{}}
 \toprule
 C\textbackslash E & \{0,0\} & \{0,1\} & \{0,2\} & \{1,0\} & \{1,1\} & \{1,2\} & \{2,0\} & \{2,1\} & \{2,2\} \\ \midrule
@@ -735,30 +775,6 @@ C\textbackslash E & \{0,0\} & \{0,1\} & \{0,2\} & \{1,0\} & \{1,1\} & \{1,2\} & 
 \end{tabular}
 \end{table}
 
-\newpage
-
-\section{Conclusão e Trabalhos Futuros}
-\label{sec:sample5}
-% \begin{itemize}
-% \color{blue}
-% \item Resumir a proposta do artigo
-% \item Ressaltar a principais repercussões da métrica 
-% \item Ressaltar as limitações da métrica
-% \item Trabalhos futuros consistentes.
-% \end{itemize}
-
-Esse trabalho propõe uma nova medida de similaridade aplicada ao ranqueamento de candidatos, onde as proficiências de um candidato em requisitos são comparados às proficiências pedidas pela empresa. Os requisitos são variáveis categóricas ordinais e os seus valores, uma possível proficiência. 
-
-O resultado final mantém as relações de magnitude, "menor que", "igual" e "maior que", entre a proficiência do candidato e da empresa, porque não basta somente saber que o candidato sabe próximo do necessário, mas sim o quanto sabe. Para que isso seja possível, os valores dos dados ordinais são convertidos em intervalares por uma função que melhor representa a relação de distância entre as proficiências, e cada valor numérico do requisito será o seu peso na medida. Por fim, o conceito de mérito, a ato de valorizar as proficiências além do necessário para empresa, é incorporado na medida.
-
-Com essa medida, será possível ranquear candidatos com o fim de diminuir o trabalho manual de empresas, sendo aplicada principalmente em sistemas de processamento de currículos e no cálculo das respostas de testes de candidatos. Além do contexto de recrutamento, a medida pode ser aplicada a dados categóricos ordinais em cenários onde a similaridade e as relações de magnitude entre as classes deve ser mantida.
-
-Algumas limitações da medida consistem na inabilidade de lidar com dados além dos ordinais, assim restringindo a sua aplicação onde há uma diversificação de dados. Por isso, trabalhos futuros podem se encarregar de generalizar a medida, mas além disso, também podem expandir a aplicação da medida, indo além do contexto do recrutamento, talvez utilizando a medida para calcular a similaridade em problemas de clusterização e recomendação. 
-
-%% The Appendices part is started with the command \appendix;
-%% appendix sections are then done as normal sections
-\appendix
-
 % \section{Sample Appendix Section}
 % \label{sec:sample:appendix}
 % Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor section \ref{sec:sample1} incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
@@ -766,8 +782,6 @@ Algumas limitações da medida consistem na inabilidade de lidar com dados além
 %% If you have bibdatabase file and want bibtex to generate the
 %% bibitems, please use
 %%
- \bibliographystyle{elsarticle-num} 
- \bibliography{cas-refs}
 
 %% else use the following coding to input the bibitems directly in the
 %% TeX file.
@@ -780,7 +794,49 @@ Algumas limitações da medida consistem na inabilidade de lidar com dados além
 % \bibitem{}
 
 % \end{thebibliography}
+
+
+% \begin{table}[htp]
+% \caption{Somente o primeiro requisito com mérito}
+% \label{table:merit-0-and-1}
+% \centering
+% \begin{tabular}{@{}llllllllll@{}}
+% \toprule
+% C\textbackslash E & \{0,0\} & \{0,1\} & \{0,2\} & \{1,0\} & \{1,1\} & \{1,2\} & \{2,0\} & \{2,1\} & \{2,2\} \\ \midrule
+% \{0,0\} & 0 & -0.15 & -0.667 & -0.15 & -0.25 & -0.678 & -0.667 & -0.678 & -1 \\
+% \{0,1\} & 0 & 0 & -0.5 & -0.15 & -0.125 & -0.536 & -0.667 & -0.571 & -0.875 \\
+% \{0,2\} & 0 & 0 & 0 & -0.15 & -0.125 & -0.107 & -0.667 & -0.571 & -0.5 \\
+% \{1,0\} & 0.125 & -0.05 & -0.583 & 0 & -0.125 & -0.571 & -0.5 & -0.536 & -0.875 \\
+% \{1,1\} & 0.125 & 0.1 & -0.417 & 0 & 0 & -0.428 & -0.5 & -0.428 & -0.75 \\
+% \{1,2\} & 0.125 & 0.1 & 0.083 & 0 & 0 & 0 & -0.5 & -0.428 & -0.375 \\
+% \{2,0\} & 0.5 & 0.25 & -0.333 & 0.45 & 0.25 & -0.25 & 0 & -0.107 & -0.5 \\
+% \{2,1\} & 0.5 & 0.4 & -0.167 & 0.45 & 0.375 & -0.107 & 0 & 0 & -0.375 \\
+% \{2,2\} & 0.5 & 0.4 & 0.333 & 0.45 & 0.375 & 0.321 & 0 & 0 & 0 \\ \bottomrule
+% \end{tabular}
+% \end{table}
+
+% \begin{table}[htp]
+% \caption{Nenhum requisito com mérito}
+% \label{table:merit-0-all}
+% \centering
+% \begin{tabular}{@{}llllllllll@{}}
+% \toprule
+% C\textbackslash E & \{0,0\} & \{0,1\} & \{0,2\} & \{1,0\} & \{1,1\} & \{1,2\} & \{2,0\} & \{2,1\} & \{2,2\} \\ \midrule
+% \{0,0\} & 0 & -0.15 & -0.667 & -0.15 & -0.25 & -0.678 & -0.667 & -0.678 & -1 \\
+% \{0,1\} & 0 & 0 & -0.5 & -0.15 & -0.125 & -0.536 & -0.667 & -0.571 & -0.875 \\
+% \{0,2\} & 0 & 0 & 0 & -0.15 & -0.125 & -0.107 & -0.667 & -0.571 & -0.5 \\
+% \{1,0\} & 0 & -0.15 & -0.667 & 0 & -0.125 & -0.571 & -0.5 & -0.536 & -0.875 \\
+% \{1,1\} & 0 & 0 & -0.5 & 0 & 0 & -0.428 & -0.5 & -0.428 & -0.75 \\
+% \{1,2\} & 0 & 0 & 0 & 0 & 0 & 0 & -0.5 & -0.428 & -0.375 \\
+% \{2,0\} & 0 & -0.15 & -0.667 & 0 & -0.125 & -0.571 & 0 & -0.107 & -0.5 \\
+% \{2,1\} & 0 & 0 & -0.5 & 0 & 0 & -0.428 & 0 & 0 & -0.375 \\
+% \{2,2\} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 
+% \bottomrule
+% \end{tabular}
+% \end{table}
+
 \end{document}
+
 \endinput
 %%
 %% End of file `elsarticle-template-num.tex'.
