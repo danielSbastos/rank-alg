@@ -165,44 +165,14 @@ const buildColumns = (attributes, tableData, setTableData) => {
   return columns;
 };
 
-const rank = ({ objects, merits, escalas }) => {
-  axios.post(`https://iov6sgglg3.execute-api.us-east-2.amazonaws.com/rank/rank`, {
+const rank = async ({ objects, merits, escalas }, setRanks) => {
+  axios.post(`https://6bbt8vjusc.execute-api.us-east-2.amazonaws.com/prod`, {
     objects,
     merits,
     scales: escalas
   }).then(res => {
-    console.log(res);
+    setRanks(res.data.body);
   });
-
-  // const objs = Object.assign({}, objects);
-  // delete objs.base;
-
-  // let n, d, i, j, c;
-  // let ranks = {};
-
-  // for (const [key, value] of Object.entries(objs)) {
-  //   d = n = 0;
-
-  //   for (const [attr, attrValue] of Object.entries(value)) {
-  //     if (escalas[attr]) {
-  //       i = escalas[attr].data.indexOf(attrValue) / (escalas[attr].n - 1);
-  //       j = escalas[attr].data.indexOf(objects.base[attr]) / (escalas[attr].n - 1);
-  //       c = merits[attr] ? 1 : 0;
-
-  //       if (i < j) {
-  //         n += (i**2 - j**2)*(j + 1);
-  //       } else {
-  //         n += (i - j)*(j + 1)*c;
-  //       }
-
-  //       d += (j + 1);
-  //     }
-  //   }
-
-  //   ranks[key] = n/d;
-  // }
-
-  return { 1: 1, 2: 1 };
 };
 
 const resultColums = [
@@ -225,7 +195,6 @@ function App() {
       .reduce((prev, cur) => ({ ...prev, [cur.key]: initialObject() }), {})
   });
 
-  // const [ranks, setRanks] = useState({ 1: 0.45, 2: -1 });
   const [ranks, setRanks] = useState({});
 
   return (
@@ -238,7 +207,7 @@ function App() {
           columns={buildColumns(attributes, tableData, setTableData)}
           dataSource={data}
         />
-        <Button className="rank" type="primary" onClick={() => setRanks(rank(tableData))}>Rank</Button>
+        <Button className="rank" type="primary" onClick={() => rank(tableData, setRanks)}>Rank</Button>
         {Object.keys(ranks).length > 0 &&
           <Table
             className='results'
@@ -253,5 +222,3 @@ function App() {
 }
 
 export default App;
-
-// TODO: Reset valores quando escala muda
