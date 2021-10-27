@@ -1,12 +1,13 @@
 import './App.css';
 import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
 
-import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useState } from 'react';
 import { Menu, Checkbox, Table, Button } from 'antd';
 import { Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 
-const attributes = ['Name', 'PPT', 'Excel', 'Word'];
+const attributes = ['-', 'Atributo 1', 'Atributo 2', 'Atributo 3'];
 const escalas = [
   {
     id: 2,
@@ -33,50 +34,42 @@ const escalas = [
 const data = [
   {
     key: 'scale',
-    Name: 'Escala',
-    PPT: null,
-    Excel: null,
-    Word: null,
+    '-': 'Escala',
   },
   {
     key: 'merit',
-    Name: 'Mérito',
-    PPT: null,
-    Excel: null,
-    Word: null,
+    '-': 'Mérito',
   },
   {
     key: 'base',
-    Name: 'Base',
-    PPT: null,
-    Excel: null,
-    Word: null,
+    '-': 'Base',
   },
   {
     key: 1,
-    Name: 'Dado 1',
-    PPT: null,
-    Excel: null,
-    Word: null,
+    '-': 'Dado 1',
   },
   {
     key: 2,
-    Name: 'Dado 2',
-    PPT: null,
-    Excel: null,
-    Word: null,
+    '-': 'Dado 2',
   }
 ];
 
+const keyNameData = {
+  '1': 'Dado 1',
+  '2': 'Dado 2'
+};
+
 const escalasMenu = (column, data, setData) => (
   <Menu
-    onClick={(e) => setData({
-      ...data,
-      escalas: {
-        ...data.escalas,
-        [column]: escalas.find(escala => escala.id.toString() === e.key)
-      }
-    })}>
+    onClick={(e) => {
+      setData({
+        ...data,
+        escalas: {
+          ...data.escalas,
+          [column]: escalas.find(escala => escala.id.toString() === e.key)
+        }
+      });
+    }}>
     {escalas.map(escala => (
       <Menu.Item key={escala.id}>
         n: {escala.n} | {escala.data.join(', ')}
@@ -133,7 +126,8 @@ const renderItem = (text, record, column, data, setData) => {
           }})}
       />
     );
-  } 
+  };
+
   let escala = escalas.find(escala => escala.id === data.escalas[column]?.id);
   if (escala) {
     return (
@@ -155,7 +149,7 @@ const buildColumns = (attributes, tableData, setTableData) => {
   let columns = [];
 
   const renderCol = (attr, text, record) => {
-    if (attr === 'Name') {
+    if (attr === '-') {
       return <b>{text}</b>;
     }
 
@@ -171,67 +165,56 @@ const buildColumns = (attributes, tableData, setTableData) => {
   return columns;
 };
 
-const rankObj = (object, base, merits, escalas) => {
-  let n, d, i, j, c;
-  let ranks = [];
+const rank = ({ objects, merits, escalas }) => {
+  axios.post(`https://iov6sgglg3.execute-api.us-east-2.amazonaws.com/rank/rank`, {
+    objects,
+    merits,
+    scales: escalas
+  }).then(res => {
+    console.log(res);
+  });
 
-  d = n = 0;
+  // const objs = Object.assign({}, objects);
+  // delete objs.base;
 
-  for (const [attr, attrValue] of Object.entries(object)) {
-    if (escalas[attr]) {
-      i = escalas[attr].data.indexOf(attrValue) / (escalas[attr].n - 1);
-      j = escalas[attr].data.indexOf(base[attr]) / (escalas[attr].n - 1);
-      c = merits[attr] ? 1 : 0;
+  // let n, d, i, j, c;
+  // let ranks = {};
 
-      if (i < j) {
-        n += (i**2 - j**2)*(j + 1);
-      } else {
-        n += (i - j)*(j + 1)*c;
-      }
+  // for (const [key, value] of Object.entries(objs)) {
+  //   d = n = 0;
 
-      d += (j + 1);
-    }
-  }
+  //   for (const [attr, attrValue] of Object.entries(value)) {
+  //     if (escalas[attr]) {
+  //       i = escalas[attr].data.indexOf(attrValue) / (escalas[attr].n - 1);
+  //       j = escalas[attr].data.indexOf(objects.base[attr]) / (escalas[attr].n - 1);
+  //       c = merits[attr] ? 1 : 0;
 
-  return n/d;
+  //       if (i < j) {
+  //         n += (i**2 - j**2)*(j + 1);
+  //       } else {
+  //         n += (i - j)*(j + 1)*c;
+  //       }
+
+  //       d += (j + 1);
+  //     }
+  //   }
+
+  //   ranks[key] = n/d;
+  // }
+
+  return { 1: 1, 2: 1 };
 };
 
-
-// const rank = ({ objects, merits, escalas }) => {
-//   const base = objects['base'];
-//   delete objects['base'];
-
-//   let n, d, i, j, c;
-//   let ranks = [];
-
-//   for (const [key, value] of Object.entries(objects)) {
-//     d = n = 0;
-
-//     for (const [attr, attrValue] of Object.entries(value)) {
-//       if (escalas[attr]) {
-//         i = escalas[attr].data.indexOf(attrValue) / (escalas[attr].n - 1);
-//         j = escalas[attr].data.indexOf(base[attr]) / (escalas[attr].n - 1);
-//         c = merits[attr] ? 1 : 0;
-
-//         if (i < j) {
-//           n += (i**2 - j**2)*(j + 1);
-//         } else {
-//           n += (i - j)*(j + 1)*c;
-//         }
-
-//         d += (j + 1);
-//       }
-//     }
-
-//     ranks.push({ [key]: n/d });
-//   }
-
-//   return ranks;
-// };
-
-const allSelected = (obj) => Object.values(obj).filter(v => v == null).length === 0;
+const resultColums = [
+  { title: 'Object', dataIndex: 'object', key: 'object' },
+  { title: 'Rank value', dataIndex: 'rankValue', key: 'rankValue' }
+];
 
 function App() {
+  const initialObject = () => {
+    return attributes.slice(1, attributes.length).reduce((acc, cur) => ({ ...acc, [cur]: null }), {});
+  };
+
   const [tableData, setTableData] = useState({
     escalas: {},
     merits: attributes
@@ -239,30 +222,31 @@ function App() {
       .reduce((prev, cur) => ({ ...prev, [cur]: false }), {}),
     objects: data
       .slice(2, data.length)
-      .reduce((prev, cur) => ({ ...prev, [cur.key]: { Word: null, PPT: null, Excel: null} }), {})
+      .reduce((prev, cur) => ({ ...prev, [cur.key]: initialObject() }), {})
   });
 
+  // const [ranks, setRanks] = useState({ 1: 0.45, 2: -1 });
   const [ranks, setRanks] = useState({});
-
-  useEffect(() => {
-    for (const [attr, attrValue] of Object.entries(tableData.objects)) {
-      if (attr !== 'base' && allSelected(attrValue)) {
-        const r = rankObj(attrValue, tableData.objects.base, tableData.merits, tableData.escalas);
-        console.log(r);
-        // TODO: Infinite render
-        setRanks({ ...ranks, [attr]: r });
-      }
-    }
-  }, [tableData, ranks]);
 
   return (
     <div className="App">
       <header className="App-header">
+        <h2>Ranking</h2>
         <Table
+          pagination={false}
           className="table-striped-rows"
           columns={buildColumns(attributes, tableData, setTableData)}
           dataSource={data}
         />
+        <Button className="rank" type="primary" onClick={() => setRanks(rank(tableData))}>Rank</Button>
+        {Object.keys(ranks).length > 0 &&
+          <Table
+            className='results'
+            pagination={false}
+            columns={resultColums}
+            dataSource={Object.entries(ranks).map(rank => ({ key: rank[0], object: keyNameData[rank[0]], rankValue: rank[1]} ))}
+          />
+        }
       </header>
     </div>
   );
