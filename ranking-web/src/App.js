@@ -189,39 +189,6 @@ const buildColumns = (attributes, tableData, setTableData) => {
   return columns;
 };
 
-// const rank = ({ objects, merits, escalas }, setRanks, setRankingSpan) => {
-//   const objs = Object.assign({}, objects);
-//   delete objs.base;
-
-//   let n, d, i, j, c;
-//   let ranks = {};
-
-//   for (const [key, value] of Object.entries(objs)) {
-//     d = n = 0;
-
-//     for (const [attr, attrValue] of Object.entries(value)) {
-//       if (attrValue && objects.base[attr] && escalas[attr]) {
-//         i = escalas[attr].data.indexOf(attrValue) / (escalas[attr].n - 1);
-//         j = escalas[attr].data.indexOf(objects.base[attr]) / (escalas[attr].n - 1);
-//         c = merits[attr] ? 1 : 0;
-
-//         if (i < j) {
-//           n += (i**2 - j**2)*(j + 1);
-//         } else {
-//           n += (i - j)*(j + 1)*c;
-//         }
-
-//         d += (j + 1);
-//       }
-//     }
-
-//     if (!isNaN(n/d)) ranks[key] = n/d;
-//   }
-
-//   setRankingSpan(16);
-//   setRanks(ranks);
-// };
-
 const rank = async ({ objects, merits, escalas }, setRanks, setRankingSpan) => {
   debugger;
   const objs = Object.assign({}, objects);
