@@ -3,16 +3,16 @@ import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
 
 import axios from 'axios';
 import { useState } from 'react';
-import { Menu, Checkbox, Table, Button } from 'antd';
+import { Row, Col, Menu, Checkbox, Table, Button } from 'antd';
 import { Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 
-const attributes = ['-', 'Atributo 1', 'Atributo 2', 'Atributo 3', '+'];
+const attributes = ['-', 'Atributo 1', 'Atributo 2', 'Atributo 3', 'Atributo 4', 'Atributo 5', 'Atributo 6'];
 const escalas = [
   {
     id: 2,
     n: 2,
-    data: ['Sabe', 'Não Sabe']
+    data: ['Não Sabe', 'Sabe']
   },
   {
     id: 3,
@@ -46,21 +46,37 @@ const data = [
   },
   {
     key: 1,
-    '-': 'Dado 1',
+    '-': 'Objeto 1',
   },
   {
     key: 2,
-    '-': 'Dado 2',
+    '-': 'Objeto 2',
   },
   {
-    key: 'add',
-    '-': '+',
+    key: 3,
+    '-': 'Objeto 3',
+  },
+  {
+    key: 4,
+    '-': 'Objeto 4',
+  },
+  {
+    key: 5,
+    '-': 'Objeto 5',
+  },
+  {
+    key: 6,
+    '-': 'Objeto 6',
   }
 ];
 
 const keyNameData = {
-  '1': 'Dado 1',
-  '2': 'Dado 2'
+  '1': 'Objeto 1',
+  '2': 'Objeto 2',
+  '3': 'Objeto 3',
+  '4': 'Objeto 4',
+  '5': 'Objeto 5',
+  '6': 'Objeto 6',
 };
 
 const escalasMenu = (column, data, setData) => (
@@ -149,62 +165,65 @@ const renderItem = (text, record, column, data, setData) => {
 };
 
 const initialObject = () => {
-  return attributes.slice(1, attributes.length - 1).reduce((acc, cur) => ({ ...acc, [cur]: null }), {});
+  return attributes.slice(1, attributes.length).reduce((acc, cur) => ({ ...acc, [cur]: null }), {});
 };
 
 const buildColumns = (attributes, tableData, setTableData) => {
   let column = null;
   let columns = [];
 
-  const addObj = (objects) => {
-    const name = Object.keys(objects).length - 1;
-
-    return {
-      ...tableData.objects,
-      [name]: initialObject()
-    };
-  };
-
   const renderCol = (attr, text, record, index) => {
-    if (attr === '+') {
-      return {
-        children: <Button>+</Button>,
-        props: { rowSpan: 0 }
-      };
-    }
-
     if (attr === '-') {
-      if (index === (Object.keys(tableData.objects).length + 1)) {
-        return <Button onClick={() => {
-          setTableData({
-            ...tableData,
-            objects: addObj(tableData.objects)
-          });
-        }}>+</Button>;
-      }
       return <b>{text}</b>;
-    }
-
-    if (index === (Object.keys(tableData.objects).length + 1)) {
-      return {
-         props: { colSpan: 0 },
-       };
     }
 
     return renderItem(text, record, attr, tableData, setTableData);
   };
 
   attributes.forEach(attr => {
-    column = { dataIndex: attr, key: attr };
+    column = { title: attr, dataIndex: attr, key: attr };
     column['render'] = (text, record, index) => renderCol(attr, text, record, index);
-    column['title'] = attr === '+' ? <Button>+</Button> : attr;
     columns.push(column);
   });
 
   return columns;
 };
 
-const rank = async ({ objects, merits, escalas }, setRanks) => {
+// const rank = ({ objects, merits, escalas }, setRanks, setRankingSpan) => {
+//   const objs = Object.assign({}, objects);
+//   delete objs.base;
+
+//   let n, d, i, j, c;
+//   let ranks = {};
+
+//   for (const [key, value] of Object.entries(objs)) {
+//     d = n = 0;
+
+//     for (const [attr, attrValue] of Object.entries(value)) {
+//       if (attrValue && objects.base[attr] && escalas[attr]) {
+//         i = escalas[attr].data.indexOf(attrValue) / (escalas[attr].n - 1);
+//         j = escalas[attr].data.indexOf(objects.base[attr]) / (escalas[attr].n - 1);
+//         c = merits[attr] ? 1 : 0;
+
+//         if (i < j) {
+//           n += (i**2 - j**2)*(j + 1);
+//         } else {
+//           n += (i - j)*(j + 1)*c;
+//         }
+
+//         d += (j + 1);
+//       }
+//     }
+
+//     if (!isNaN(n/d)) ranks[key] = n/d;
+//   }
+
+//   setRankingSpan(16);
+//   setRanks(ranks);
+// };
+
+const rank = async ({ objects, merits, escalas }, setRanks, setRankingSpan) => {
+  debugger;
   const objs = Object.assign({}, objects);
   delete objs['add'];
 
@@ -214,12 +233,13 @@ const rank = async ({ objects, merits, escalas }, setRanks) => {
     scales: escalas
   }).then(res => {
     setRanks(res.data.body);
+    setRankingSpan(16);
   });
 };
 
 const resultColums = [
-  { title: 'Object', dataIndex: 'object', key: 'object' },
-  { title: 'Rank value', dataIndex: 'rankValue', key: 'rankValue' }
+  { title: 'Objeto', dataIndex: 'object', key: 'object' },
+  { title: 'Rank', dataIndex: 'rankValue', key: 'rankValue' }
 ];
 
 function App() {
@@ -234,27 +254,39 @@ function App() {
   });
 
   const [ranks, setRanks] = useState({});
+  const [rankingSpan, setRankingSpan] = useState(24);
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h2>Ranking</h2>
-        <Table
-          pagination={false}
-          className="table-striped-rows"
-          columns={buildColumns(attributes, tableData, setTableData)}
-          dataSource={data}
-        />
-        <Button className="rank" type="primary" onClick={() => rank(tableData, setRanks)}>Rank</Button>
-        {Object.keys(ranks).length > 0 &&
-          <Table
-            className='results'
-            pagination={false}
-            columns={resultColums}
-            dataSource={Object.entries(ranks).map(rank => ({ key: rank[0], object: keyNameData[rank[0]], rankValue: rank[1]} ))}
-          />
-        }
-      </header>
+      <Row>
+        <Col span={rankingSpan}>
+          <header className="App-header">
+            <h2>Ranking</h2>
+            <Table
+              pagination={false}
+              className="table-striped-rows"
+              columns={buildColumns(attributes, tableData, setTableData)}
+              dataSource={data}
+            />
+            <Button className="rank" type="primary" onClick={() => rank(tableData, setRanks, setRankingSpan)}>Ranquear</Button>
+          </header>
+        </Col>
+        <Col span={24 - rankingSpan}>
+          <header className="App-header">
+            {Object.keys(ranks).length > 0 &&
+             <>
+              <h3>Resultados</h3>
+              <Table
+                className='results'
+                pagination={false}
+                columns={resultColums}
+                dataSource={Object.entries(ranks).map(rank => ({ key: rank[0], object: keyNameData[rank[0]], rankValue: rank[1]} ))}
+              />
+             </>
+            }
+          </header>
+        </Col>
+      </Row>
     </div>
   );
 }
