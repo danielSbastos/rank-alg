@@ -7,7 +7,7 @@ import { Menu, Checkbox, Table, Button } from 'antd';
 import { Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 
-const attributes = ['-', 'Atributo 1', 'Atributo 2', 'Atributo 3'];
+const attributes = ['-', 'Atributo 1', 'Atributo 2', 'Atributo 3', '+'];
 const escalas = [
   {
     id: 2,
@@ -51,6 +51,10 @@ const data = [
   {
     key: 2,
     '-': 'Dado 2',
+  },
+  {
+    key: 'add',
+    '-': '+',
   }
 ];
 
@@ -144,21 +148,56 @@ const renderItem = (text, record, column, data, setData) => {
   return <i>Escolha uma escala</i>;
 };
 
+const initialObject = () => {
+  return attributes.slice(1, attributes.length - 1).reduce((acc, cur) => ({ ...acc, [cur]: null }), {});
+};
+
 const buildColumns = (attributes, tableData, setTableData) => {
   let column = null;
   let columns = [];
 
-  const renderCol = (attr, text, record) => {
+  const addObj = (objects) => {
+    const name = Object.keys(objects).length - 1;
+
+    return {
+      ...tableData.objects,
+      [name]: initialObject()
+    };
+  };
+
+  const renderCol = (attr, text, record, index) => {
+    if (attr === '+') {
+      return {
+        children: <Button>+</Button>,
+        props: { rowSpan: 0 }
+      };
+    }
+
     if (attr === '-') {
+      if (index === (Object.keys(tableData.objects).length + 1)) {
+        return <Button onClick={() => {
+          setTableData({
+            ...tableData,
+            objects: addObj(tableData.objects)
+          });
+        }}>+</Button>;
+      }
       return <b>{text}</b>;
+    }
+
+    if (index === (Object.keys(tableData.objects).length + 1)) {
+      return {
+         props: { colSpan: 0 },
+       };
     }
 
     return renderItem(text, record, attr, tableData, setTableData);
   };
 
   attributes.forEach(attr => {
-    column = { title: attr, dataIndex: attr, key: attr };
-    column['render'] = (text, record) => renderCol(attr, text, record);
+    column = { dataIndex: attr, key: attr };
+    column['render'] = (text, record, index) => renderCol(attr, text, record, index);
+    column['title'] = attr === '+' ? <Button>+</Button> : attr;
     columns.push(column);
   });
 
@@ -166,9 +205,12 @@ const buildColumns = (attributes, tableData, setTableData) => {
 };
 
 const rank = async ({ objects, merits, escalas }, setRanks) => {
+  const objs = Object.assign({}, objects);
+  delete objs['add'];
+
   axios.post(`https://6bbt8vjusc.execute-api.us-east-2.amazonaws.com/prod`, {
-    objects,
     merits,
+    objects: objs,
     scales: escalas
   }).then(res => {
     setRanks(res.data.body);
@@ -181,10 +223,6 @@ const resultColums = [
 ];
 
 function App() {
-  const initialObject = () => {
-    return attributes.slice(1, attributes.length).reduce((acc, cur) => ({ ...acc, [cur]: null }), {});
-  };
-
   const [tableData, setTableData] = useState({
     escalas: {},
     merits: attributes
