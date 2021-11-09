@@ -172,7 +172,7 @@ const buildColumns = (attributes, tableData, setTableData) => {
 const rank = async ({ objects, merits, escalas }, setRanks) => {
   const objs = Object.assign({}, objects);
 
-  axios.post(`https:6bbt8vjusc.execute-api.us-east-2.amazonaws.com/prod`, {
+  axios.post(`https://6bbt8vjusc.execute-api.us-east-2.amazonaws.com/prod`, {
     merits,
     objects: objs,
     scales: escalas
@@ -291,28 +291,22 @@ function App() {
 
   return (
     <Layout>
-      <Header style={{ height: '90px', paddingLeft: '230px', paddingTop: '20px' }}>
+      <Header style={{ height: '90px', paddingLeft: '15%', paddingTop: '20px' }}>
         <Title level={2} style={{ color: 'white' }}>Ranqueamento de Candidatos</Title>
       </Header>
       <Layout>
-        <Sider width={230}>
+        <Sider width={'15%'}>
           <div style={{ padding: '10%'}}>
             <Title level={4} style={{ color: 'white' }}>Definições</Title>
 
             <Title level={5} style={{ color: 'white' }}>Aspecto</Title>
-            <Text style={{ color: 'white' }}>Blablabla blabla</Text>
+            <Text style={{ color: 'white' }}>Característica a ser avaliada.</Text>
 
             <Title level={5} style={{ color: 'white' }}>Escala</Title>
-            <Text style={{ color: 'white' }}>Blablabla blabla</Text>
+            <Text style={{ color: 'white' }}>Conjuntos de possíveis valores de proficiência de um aspecto.</Text>
 
             <Title level={5} style={{ color: 'white' }}>Mérito</Title>
-            <Text style={{ color: 'white' }}>Blablabla blabla</Text>
-
-            <Title level={5} style={{ color: 'white' }}>Candidato desejado</Title>
-            <Text style={{ color: 'white' }}>Blablabla blabla</Text>
-
-            <Title level={5} style={{ color: 'white' }}>Candidatos</Title>
-            <Text style={{ color: 'white' }}>Blablabla blabla</Text>
+            <Text style={{ color: 'white' }}>Valorização das proficiências dos candidatos que são acima do que é desejado naquele aspecto.</Text>
             <Divider />
           </div>
         </Sider>
@@ -384,17 +378,24 @@ function App() {
         </Content>
         <Sider width={'25%'}>
           <div style={{ padding: '6% 8%'}}>
-            {Object.keys(ranks).length > 0 &&
-              <>
-                <Title level={3} style={{ color: 'white' }}>Resultados</Title>
-                <Table
+            <Title level={3} style={{ color: 'white' }}>Resultados</Title>
+            <Text style={{ color: 'white' }}>Interpretando o "Valor":</Text>
+            <ul style={{ color: 'white' }}>
+              <li><b>Entre -1 e 0:</b> proficiências dos aspectos do candidato estão abaixas das desejadas;</li>
+              <li><b>Igual à 0:</b> proficiências estão iguais às desejadas;</li>
+              <li><b>Entre 0 e 1:</b> proficiências estão acima das desejadas.</li>
+            </ul>
+
+
+            {Object.keys(ranks).length > 0 ?
+              <Table
                   className='results'
                   pagination={false}
                   columns={resultColums}
                   dataSource={sortRanks(ranks)}
 
-                />
-              </>
+              />
+             : <Text italic style={{ color: 'gray' }}>Ranqueie algum candidato primeiro para visualizar os resultados.</Text>
             }
           </div>
         </Sider>
