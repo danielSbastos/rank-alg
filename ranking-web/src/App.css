@@ -1,14 +1,12 @@
 .App {
-  text-align: center;
+  margin: 3%;
+  height: 100vh;
 }
 
 .App-header {
   background-color: white;
   min-height: 100vh;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
 }
@@ -19,4 +17,8 @@
 
 .rank {
   margin: 25px 10px;
+}
+
+.ant-table-thead > .ant-table-cell {
+  width: 7% !important;
 }

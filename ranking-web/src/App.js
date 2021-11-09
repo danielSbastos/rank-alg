@@ -2,10 +2,13 @@ import './App.css';
 import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
 
 import axios from 'axios';
-import { useState } from 'react';
-import { Row, Col, Menu, Checkbox, Table, Button } from 'antd';
+import { useEffect, useCallback, useState } from 'react';
+import { InputNumber, Typography, Layout, Divider, Row, Col, Menu, Checkbox, Table, Button } from 'antd';
 import { Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
+
+const { Header, Footer, Sider, Content } = Layout;
+const { Title, Text } = Typography;
 
 const attributes = ['-', 'Atributo 1', 'Atributo 2', 'Atributo 3', 'Atributo 4', 'Atributo 5', 'Atributo 6'];
 const escalas = [
@@ -31,7 +34,7 @@ const escalas = [
   }
 ];
 
-const data = [
+const configData = [
   {
     key: 'scale',
     '-': 'Escala',
@@ -41,42 +44,19 @@ const data = [
     '-': 'Mérito',
   },
   {
-    key: 'base',
-    '-': 'Base',
-  },
-  {
-    key: 1,
-    '-': 'Objeto 1',
-  },
-  {
-    key: 2,
-    '-': 'Objeto 2',
-  },
-  {
-    key: 3,
-    '-': 'Objeto 3',
-  },
-  {
-    key: 4,
-    '-': 'Objeto 4',
-  },
-  {
-    key: 5,
-    '-': 'Objeto 5',
-  },
-  {
-    key: 6,
-    '-': 'Objeto 6',
+    key: 'ideal-candidate',
+    '-': 'Candidato desejado',
   }
 ];
 
 const keyNameData = {
-  '1': 'Objeto 1',
-  '2': 'Objeto 2',
-  '3': 'Objeto 3',
-  '4': 'Objeto 4',
-  '5': 'Objeto 5',
-  '6': 'Objeto 6',
+  '1': 'Candidato 1',
+  '2': 'Candidato 2',
+  '3': 'Candidato 3',
+  '4': 'Candidato 4',
+  '5': 'Candidato 5',
+  '6': 'Candidato 6',
+  '7': 'Candidato 7',
 };
 
 const escalasMenu = (column, data, setData) => (
@@ -164,8 +144,8 @@ const renderItem = (text, record, column, data, setData) => {
   return <i>Escolha uma escala</i>;
 };
 
-const initialObject = () => {
-  return attributes.slice(1, attributes.length).reduce((acc, cur) => ({ ...acc, [cur]: null }), {});
+const initialObject = (attributes) => {
+  return attributes.reduce((acc, cur) => ({ ...acc, [cur]: null }), {});
 };
 
 const buildColumns = (attributes, tableData, setTableData) => {
@@ -189,7 +169,7 @@ const buildColumns = (attributes, tableData, setTableData) => {
   return columns;
 };
 
-const rank = async ({ objects, merits, escalas }, setRanks, setRankingSpan) => {
+const _rank = async ({ objects, merits, escalas }, setRanks, setRankingSpan) => {
   debugger;
   const objs = Object.assign({}, objects);
   delete objs['add'];
@@ -204,57 +184,239 @@ const rank = async ({ objects, merits, escalas }, setRanks, setRankingSpan) => {
   });
 };
 
+
+const rank = ({ objects, merits, escalas }, setRanks, setRankingSpan) => {
+  const objs = Object.assign({}, objects);
+  delete objs['ideal-candidate'];
+
+  let n, d, i, j, c;
+  let ranks = {};
+
+  for (const [key, value] of Object.entries(objs)) {
+    d = n = 0;
+
+    for (const [attr, attrValue] of Object.entries(value)) {
+      if (attrValue && objects['ideal-candidate'][attr] && escalas[attr]) {
+        i = escalas[attr].data.indexOf(attrValue) / (escalas[attr].n - 1);
+        j = escalas[attr].data.indexOf(objects['ideal-candidate'][attr]) / (escalas[attr].n - 1);
+        c = merits[attr] ? 1 : 0;
+
+        if (i < j) {
+          n += (i**2 - j**2)*(j + 1);
+        } else {
+          n += (i**2 - j**2)*(j + 1)*c;
+        }
+
+        d += (j + 1);
+      }
+    }
+
+    if (!isNaN(n/d)) ranks[key] = Math.round((n/d) * 10000)/10000;
+  }
+
+  setRanks(ranks);
+};
+
 const resultColums = [
-  { title: 'Objeto', dataIndex: 'object', key: 'object' },
-  { title: 'Rank', dataIndex: 'rankValue', key: 'rankValue' }
+  { title: 'Candidato', dataIndex: 'object', key: 'object' },
+  { title: 'Ordem', dataIndex: 'order', key: 'order' },
+  { title: 'Valor', dataIndex: 'rankValue', key: 'rankValue' }
 ];
 
+const genAttributes = (n, ignoreFirst) => {
+  let c = n;
+  let attributes;
+
+  if (ignoreFirst) {
+    attributes = [];
+  } else {
+    attributes = ['-'];
+  }
+
+  while (c > 0) {
+    attributes.push(`Aspecto ${n - c + 1}`);
+    c--;
+  }
+
+  return attributes;
+};
+
+const genData = n => {
+  let c = n;
+  const data = [];
+
+  while (c > 0) {
+    data.push({ key: n - c + 1, '-': `Candidato ${n - c + 1}`});
+    c--;
+  }
+
+  return data;
+};
+
 function App() {
-  const [tableData, setTableData] = useState({
-    escalas: {},
-    merits: attributes
-      .slice(1, attributes.length)
-      .reduce((prev, cur) => ({ ...prev, [cur]: false }), {}),
-    objects: data
-      .slice(2, data.length)
-      .reduce((prev, cur) => ({ ...prev, [cur.key]: initialObject() }), {})
-  });
+  const [tableData, setTableData] = useState({ escalas: {}, objects: {} });
 
   const [ranks, setRanks] = useState({});
   const [rankingSpan, setRankingSpan] = useState(24);
 
+  const [step, setStep] = useState(0);
+  const [numAttributes, setNumAttributes] = useState(0);
+  const [numCandidates, setNumCandidates] = useState(0);
+
+  useEffect(() => {
+    const attrs = genAttributes(numAttributes, true);
+
+    const updateObjects = (objs, numAttributes) => {
+      let r = {};
+
+      if (objs) {
+        Object.entries(objs).map(entry => {
+          const newObj = genAttributes(numAttributes, true);
+          r[entry[0]] = initialObject(newObj);
+        });
+      }
+
+      return r;
+    };
+
+    const updateMerits = (numAttributes) => {
+      const newObj = genAttributes(numAttributes, true);
+      return newObj.reduce((prev, cur) => ({ ...prev, [cur]: false }), {});
+    };
+
+    setTableData({
+      ...tableData,
+      merits: updateMerits(numAttributes),
+      objects: updateObjects(tableData.objects, numAttributes)
+    });
+
+  }, [numAttributes]);
+
+  useEffect(() => {
+    const data = genData(numCandidates);
+    const objs = data.reduce((prev, cur) => ({
+      ...prev,
+      [cur.key]: initialObject(genAttributes(numAttributes, true))
+    }), {});
+
+    setTableData({
+      ...tableData,
+      objects: objs
+    });
+
+  }, [numCandidates]);
+
   return (
-    <div className="App">
-      <Row>
-        <Col span={rankingSpan}>
-          <header className="App-header">
-            <h2>Ranking</h2>
-            <Table
-              pagination={false}
-              className="table-striped-rows"
-              columns={buildColumns(attributes, tableData, setTableData)}
-              dataSource={data}
-            />
-            <Button className="rank" type="primary" onClick={() => rank(tableData, setRanks, setRankingSpan)}>Ranquear</Button>
-          </header>
-        </Col>
-        <Col span={24 - rankingSpan}>
-          <header className="App-header">
-            {Object.keys(ranks).length > 0 &&
-             <>
-              <h3>Resultados</h3>
-              <Table
-                className='results'
-                pagination={false}
-                columns={resultColums}
-                dataSource={Object.entries(ranks).map(rank => ({ key: rank[0], object: keyNameData[rank[0]], rankValue: rank[1]} ))}
+    <Layout>
+      <Header style={{ height: '90px', paddingLeft: '230px', paddingTop: '20px' }}>
+        <Title level={2} style={{ color: 'white' }}>Ranqueamento de Candidatos</Title>
+      </Header>
+      <Layout>
+        <Sider width={230}>
+         <div style={{ padding: '10%'}}>
+           <Title level={4} style={{ color: 'white' }}>Definições</Title>
+
+           <Title level={5} style={{ color: 'white' }}>Aspecto</Title>
+           <Text style={{ color: 'white' }}>Blablabla blabla</Text>
+
+           <Title level={5} style={{ color: 'white' }}>Escala</Title>
+           <Text style={{ color: 'white' }}>Blablabla blabla</Text>
+
+           <Title level={5} style={{ color: 'white' }}>Mérito</Title>
+           <Text style={{ color: 'white' }}>Blablabla blabla</Text>
+
+           <Title level={5} style={{ color: 'white' }}>Candidato desejado</Title>
+           <Text style={{ color: 'white' }}>Blablabla blabla</Text>
+
+           <Title level={5} style={{ color: 'white' }}>Candidatos</Title>
+           <Text style={{ color: 'white' }}>Blablabla blabla</Text>
+           <Divider />
+          </div>
+        </Sider>
+
+        <Content>
+         <div className="App">
+          <Title level={3}>Ambiente de Configuração</Title>
+          <Row className="step-0">
+            <p>Quantidade de aspectos:
+              <InputNumber
+                style={{ marginLeft: '21px' }}
+                min={1}
+                max={10}
+                defaultValue={0}
+                onChange={(value) => setNumAttributes(value)}
               />
-             </>
+            </p>
+          </Row>
+          <Row className="step-0">
+            <label>Quantidade de candidatos:
+              <InputNumber
+                style={{ marginLeft: '10px' }}
+                min={1}
+                max={10}
+                defaultValue={0}
+                onChange={(value) => setNumCandidates(value)}
+              />
+            </label>
+          </Row>
+          {step === 0 && <Button className="rank" type="primary" onClick={() => setStep(1)}>Próximo</Button>}
+
+          {step >= 1 &&
+          <>
+            <br />
+            <Row className="step-1">
+              <Col span={24}>
+                <Table
+                  pagination={false}
+                  className="table-striped-rows"
+                  columns={buildColumns(genAttributes(numAttributes), tableData, setTableData)}
+                  dataSource={configData}
+                />
+              </Col>
+
+              {step === 1 && <Button className="rank" type="primary" onClick={() => setStep(2)}>Definir candidatos</Button>}
+            </Row>
+          </>
+          }
+
+          {step >= 2 &&
+            <>
+              <Divider />
+              <Title level={3}>Candidatos</Title>
+              <Row className="step-1">
+                <Col span={24}>
+                  <Table
+                    pagination={false}
+                    className="table-striped-rows"
+                    columns={buildColumns(genAttributes(numAttributes), tableData, setTableData)}
+                    dataSource={genData(numCandidates)}
+                  />
+                </Col>
+
+                <Button className="rank" type="primary" onClick={() => rank(tableData, setRanks)}>Ranquear candidados</Button>
+              </Row>
+            </>
+          }
+
+          </div>
+        </Content>
+        <Sider width={400}>
+          <div style={{ padding: '10%' }}>
+            {Object.keys(ranks).length > 0 &&
+              <>
+                <Title level={3} style={{ color: 'white' }}>Resultados</Title>
+                <Table
+                  className='results'
+                  pagination={false}
+                  columns={resultColums}
+                  dataSource={Object.entries(ranks).map(rank => ({ key: rank[0], object: keyNameData[rank[0]], rankValue: rank[1], order: 1 } ))}
+                />
+              </>
             }
-          </header>
-        </Col>
-      </Row>
-    </div>
+          </div>
+        </Sider>
+      </Layout>
+    </Layout>
   );
 }
 
