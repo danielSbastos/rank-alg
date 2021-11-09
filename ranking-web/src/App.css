@@ -19,6 +19,10 @@
   margin: 25px 10px;
 }
 
-.ant-table-thead > .ant-table-cell {
-  width: 7% !important;
+.ant-table-container table > thead > tr:first-child th:first-child {
+  width: 175px;
+}
+
+.white-text {
+  color: 'white';
 }
