@@ -2,15 +2,14 @@ import './App.css';
 import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
 
 import axios from 'axios';
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { InputNumber, Typography, Layout, Divider, Row, Col, Menu, Checkbox, Table, Button } from 'antd';
 import { Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 
-const { Header, Footer, Sider, Content } = Layout;
+const { Header, Sider, Content } = Layout;
 const { Title, Text } = Typography;
 
-const attributes = ['-', 'Atributo 1', 'Atributo 2', 'Atributo 3', 'Atributo 4', 'Atributo 5', 'Atributo 6'];
 const escalas = [
   {
     id: 2,
@@ -170,7 +169,6 @@ const buildColumns = (attributes, tableData, setTableData) => {
 };
 
 const _rank = async ({ objects, merits, escalas }, setRanks, setRankingSpan) => {
-  debugger;
   const objs = Object.assign({}, objects);
   delete objs['add'];
 
@@ -183,7 +181,6 @@ const _rank = async ({ objects, merits, escalas }, setRanks, setRankingSpan) => 
     setRankingSpan(16);
   });
 };
-
 
 const rank = ({ objects, merits, escalas }, setRanks, setRankingSpan) => {
   const objs = Object.assign({}, objects);
@@ -255,17 +252,12 @@ const genData = n => {
 
 function App() {
   const [tableData, setTableData] = useState({ escalas: {}, objects: {} });
-
   const [ranks, setRanks] = useState({});
-  const [rankingSpan, setRankingSpan] = useState(24);
-
   const [step, setStep] = useState(0);
   const [numAttributes, setNumAttributes] = useState(0);
   const [numCandidates, setNumCandidates] = useState(0);
 
   useEffect(() => {
-    const attrs = genAttributes(numAttributes, true);
-
     const updateObjects = (objs, numAttributes) => {
       let r = {};
 
