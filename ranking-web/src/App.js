@@ -6,7 +6,7 @@ import randomizeData from './randomizeData';
 
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { InputNumber, Typography, Layout, Divider, Row, Col, Menu, Checkbox, Table, Button } from 'antd';
+import { Modal, InputNumber, Typography, Layout, Divider, Row, Col, Menu, Checkbox, Table, Button } from 'antd';
 import { Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 
@@ -252,6 +252,10 @@ function App() {
   const [numCandidates, setNumCandidates] = useState(0);
   const [sampleLoading, setSampleLoading] = useState(false);
   const [sample, setSample] = useState(false);
+  const [showInfoCheckbox, setShowInfoCheckbox] = useState(true);
+
+  const showIntro = localStorage.getItem("showIntro");
+  const [modalVisible, setModalVisible] = useState(showIntro === 'true' || showIntro === null);
 
   const handleGenRandomData = () => {
     const randomData = randomizeData();
@@ -327,11 +331,25 @@ function App() {
       ...tableData,
       objects: {
         ...objs,
-        ['ideal-candidate']: tableData.objects['ideal-candidate']
+        'ideal-candidate': tableData.objects['ideal-candidate']
       }
     });
 
   }, [numCandidates]);
+
+  const modalFooter = [
+    <Button key="ok" type="primary" onClick={() => setModalVisible(false)}>
+      Ok
+    </Button>
+  ];
+
+  if (showInfoCheckbox) {
+    modalFooter.unshift(
+      <Checkbox onChange={(e) => localStorage.setItem("showIntro", !e.target.checked)}>
+        Não mostrar mais essa mensagem
+      </Checkbox>
+    )
+  }
 
   return (
     <Layout style={{ height: '70vmax' }}>
@@ -351,7 +369,10 @@ function App() {
 
             <Title level={5} style={{ color: 'white' }}>Mérito</Title>
             <Text style={{ color: 'white' }}>Valorização das proficiências dos candidatos que são acima do que é desejado naquele aspecto.</Text>
+
             <Divider />
+
+            <Button type="danger" onClick={() => { setModalVisible(true); setShowInfoCheckbox(false) }}>Exibir Funcionamento</Button>
           </div>
         </Sider>
 
@@ -458,20 +479,29 @@ function App() {
               <li><b>Entre 0 e 1:</b> proficiências estão acima das desejadas.</li>
             </ul>
 
-
             {Object.keys(ranks).length > 0 ?
               <Table
-                  className='results'
-                  pagination={false}
-                  columns={resultColums}
-                  dataSource={sortRanks(ranks)}
-
+                className='results'
+                pagination={false}
+                columns={resultColums}
+                dataSource={sortRanks(ranks)}
               />
              : <Text italic style={{ color: 'gray' }}>Ranqueie algum candidato primeiro para visualizar os resultados.</Text>
             }
           </div>
         </Sider>
       </Layout>
+
+      <Modal
+        title="Funcionamento"
+        centered
+        visible={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        footer={modalFooter}
+      >
+        <p>some contents...</p>
+        <p>some contents...</p>
+      </Modal>
     </Layout>
   );
 }
