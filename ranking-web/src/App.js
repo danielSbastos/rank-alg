@@ -1,6 +1,8 @@
 import './App.css';
 import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
 
+import sampleData from './sampleData';
+
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { InputNumber, Typography, Layout, Divider, Row, Col, Menu, Checkbox, Table, Button } from 'antd';
@@ -56,6 +58,9 @@ const keyNameData = {
   '5': 'Candidato 5',
   '6': 'Candidato 6',
   '7': 'Candidato 7',
+  '8': 'Candidato 8',
+  '9': 'Candidato 9',
+  '10': 'Candidato 10',
 };
 
 const escalasMenu = (column, data, setData) => (
@@ -169,7 +174,7 @@ const buildColumns = (attributes, tableData, setTableData) => {
   return columns;
 };
 
-const rank = async ({ objects, merits, escalas }, setRanks) => {
+const rankData = async ({ objects, merits, escalas }, setRanks) => {
   const objs = Object.assign({}, objects);
 
   axios.post(`https://6bbt8vjusc.execute-api.us-east-2.amazonaws.com/prod`, {
@@ -244,6 +249,21 @@ function App() {
   const [step, setStep] = useState(0);
   const [numAttributes, setNumAttributes] = useState(0);
   const [numCandidates, setNumCandidates] = useState(0);
+  const [sample, setSample] = useState(false);
+
+  const handleGenSampleData = (sampleData) => {
+    setNumAttributes(Object.keys(sampleData.escalas).length);
+    setNumCandidates(Object.keys(sampleData.objects).length - 1);
+    setTableData(sampleData);
+    setSample(true);
+  }
+
+  useEffect(() => {
+    if (sample) {
+      setStep(2);
+      rankData(tableData, setRanks);
+    }
+  }, [sample])
 
   useEffect(() => {
     const updateObjects = (objs, numAttributes) => {
@@ -313,32 +333,38 @@ function App() {
 
         <Content>
          <div className="App">
-            <Title level={3}>Ambiente de Configuração</Title>
-            <Row className="step-0">
-              <p>Quantidade de aspectos:
-                <InputNumber
-                  style={{ marginLeft: '21px' }}
-                  min={1}
-                  max={10}
-                  defaultValue={0}
-                  onChange={(value) => setNumAttributes(value)}
-                />
-              </p>
-            </Row>
-            <Row className="step-0">
-              <label>Quantidade de candidatos:
-                <InputNumber
-                  style={{ marginLeft: '10px' }}
-                  min={1}
-                  max={10}
-                  defaultValue={0}
-                  onChange={(value) => setNumCandidates(value)}
-                />
-              </label>
-            </Row>
-            {step === 0 && <Button className="rank" type="primary" onClick={() => setStep(1)}>Próximo</Button>}
+           <Title level={3}>Ambiente de Configuração</Title>
+           {!sample &&
+            <>
+              <Row className="step-0">
+                <p>Quantidade de aspectos:
+                  <InputNumber
+                    style={{ marginLeft: '21px' }}
+                    min={1}
+                    max={10}
+                    defaultValue={0}
+                    onChange={(value) => setNumAttributes(value)}
+                  />
+                </p>
+              </Row>
+              <Row className="step-0">
+                <label>Quantidade de candidatos:
+                  <InputNumber
+                    style={{ marginLeft: '10px' }}
+                    min={1}
+                    max={10}
+                    defaultValue={0}
+                    onChange={(value) => setNumCandidates(value)}
+                  />
+                </label>
+              </Row>
+              <Button className="rank" type="primary" onClick={() => handleGenSampleData(sampleData)}>Gerar Exemplo</Button>
+            </>
+           }
 
-            {step >= 1 &&
+           {step === 0 && <Button className="rank" type="primary" onClick={() => setStep(1)}>Próximo</Button>}
+
+           {step >= 1 &&
               <>
                 <br />
                 <Row className="step-1">
@@ -370,7 +396,7 @@ function App() {
                     />
                   </Col>
 
-                  <Button className="rank" type="primary" onClick={() => rank(tableData, setRanks)}>Ranquear candidados</Button>
+                  <Button className="rank" type="primary" onClick={() => rankData(tableData, setRanks)}>Ranquear candidados</Button>
                 </Row>
               </>
             }
