@@ -1,6 +1,6 @@
 .App {
   margin: 3%;
-  height: 100vh;
+  height: 85vh;
 }
 
 .App-header {
@@ -15,8 +15,17 @@
   color: #61dafb;
 }
 
-.rank {
-  margin: 25px 10px;
+.manage {
+  margin-top: 2%
+}
+
+.green-button {
+  background-color: #05a505 !important;
+  border-color: #05a505 !important
+}
+
+.manual-button {
+  margin-top: 10px;
 }
 
 .ant-table-container table > thead > tr:first-child th:first-child {

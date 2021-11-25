@@ -2,6 +2,7 @@ import './App.css';
 import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
 
 import sampleData from './sampleData';
+import randomizeData from './randomizeData';
 
 import axios from 'axios';
 import { useEffect, useState } from 'react';
@@ -246,24 +247,47 @@ const sortRanks = ranks => {
 function App() {
   const [tableData, setTableData] = useState({ escalas: {}, objects: {} });
   const [ranks, setRanks] = useState({});
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(-1);
   const [numAttributes, setNumAttributes] = useState(0);
   const [numCandidates, setNumCandidates] = useState(0);
+  const [sampleLoading, setSampleLoading] = useState(false);
   const [sample, setSample] = useState(false);
+
+  const handleGenRandomData = () => {
+    const randomData = randomizeData();
+    const newAttributesNum = Object.keys(randomData.escalas).length
+    const newCandidatesNum = Object.keys(randomData.objects).length
+
+    if (newAttributesNum !== numAttributes) setNumAttributes(newAttributesNum);
+    if ((newCandidatesNum - 1) !== numCandidates) setNumCandidates(newCandidatesNum - 1);
+
+    setTableData(randomData);
+    setSampleLoading(true);
+    setSample(true);
+  };
+
+  const handleGenManual = () => {
+    setRanks({});
+    setTableData({ escalas: {}, objects: {} });
+    setSample(false);
+    setStep(0);
+  }
 
   const handleGenSampleData = (sampleData) => {
     setNumAttributes(Object.keys(sampleData.escalas).length);
     setNumCandidates(Object.keys(sampleData.objects).length - 1);
     setTableData(sampleData);
+    setSampleLoading(true);
     setSample(true);
-  }
+  };
 
   useEffect(() => {
-    if (sample) {
+    if (sampleLoading) {
       setStep(2);
       rankData(tableData, setRanks);
+      setSampleLoading(false);
     }
-  }, [sample])
+  }, [sampleLoading]);
 
   useEffect(() => {
     const updateObjects = (objs, numAttributes) => {
@@ -310,7 +334,7 @@ function App() {
   }, [numCandidates]);
 
   return (
-    <Layout>
+    <Layout style={{ height: '70vmax' }}>
       <Header style={{ height: '90px', paddingLeft: '15%', paddingTop: '20px' }}>
         <Title level={2} style={{ color: 'white' }}>Ranqueamento de Candidatos</Title>
       </Header>
@@ -334,39 +358,61 @@ function App() {
         <Content>
          <div className="App">
            <Title level={3}>Ambiente de Configuração</Title>
-           {!sample &&
-            <>
-              <Row className="step-0">
-                <p>Quantidade de aspectos:
-                  <InputNumber
-                    style={{ marginLeft: '21px' }}
-                    min={1}
-                    max={10}
-                    defaultValue={0}
-                    onChange={(value) => setNumAttributes(value)}
-                  />
-                </p>
-              </Row>
-              <Row className="step-0">
-                <label>Quantidade de candidatos:
-                  <InputNumber
-                    style={{ marginLeft: '10px' }}
-                    min={1}
-                    max={10}
-                    defaultValue={0}
-                    onChange={(value) => setNumCandidates(value)}
-                  />
-                </label>
-              </Row>
+           <Row>
+             <Col>
+               <Button className="rank" type="primary" onClick={handleGenManual}>Definir Manualmente</Button>
+             </Col>
+
+             <Col>
+              <Divider type="vertical" />
               <Button className="rank" type="primary" onClick={() => handleGenSampleData(sampleData)}>Gerar Exemplo</Button>
+             </Col>
+
+             <Col>
+              <Divider type="vertical" />
+              <Button className="rank" type="primary" onClick={handleGenRandomData}>Gerar Aleatório</Button>
+
+             </Col>
+           </Row>
+
+           {(step >= 0 && !sample) &&
+            <>
+            <Divider />
+              <div className="manage">
+                <Row className="step-0" gutter={8}>
+                  <Col className="gutter-row">
+                    <label>Quantidade de aspectos:
+                      <InputNumber
+                        style={{ marginLeft: '5px', width: '60px' }}
+                        min={0}
+                        max={10}
+                        defaultValue={0}
+                        onChange={(value) => setNumAttributes(value)}
+                      />
+                    </label>
+                  </Col>
+                  <Col className="gutter-row">
+                    <label>Quantidade de candidatos:
+                      <InputNumber
+                        style={{ marginLeft: '5px', width: '60px' }}
+                        min={0}
+                        max={10}
+                        defaultValue={0}
+                        onChange={(value) => setNumCandidates(value)}
+                      />
+                    </label>
+                  </Col>
+                  <Col>
+                    <Button className="green-button" type="primary" onClick={() => setStep(1)}>Próximo</Button>
+                  </Col>
+                </Row>
+              </div>
             </>
-           }
+          }
 
-           {step === 0 && <Button className="rank" type="primary" onClick={() => setStep(1)}>Próximo</Button>}
-
-           {step >= 1 &&
-              <>
-                <br />
+          {step >= 1 &&
+            <>
+              <Divider />
                 <Row className="step-1">
                   <Col span={24}>
                     <Table
@@ -377,12 +423,12 @@ function App() {
                     />
                   </Col>
 
-                  {step === 1 && <Button className="rank" type="primary" onClick={() => setStep(2)}>Definir candidatos</Button>}
-                </Row>
-              </>
-            }
+                  {step === 1 && <Button className="green-button manual-button" type="primary" onClick={() => setStep(2)}>Definir Candidatos</Button>}
+              </Row>
+            </>
+          }
 
-            {step >= 2 &&
+          {step >= 2 &&
               <>
                 <Divider />
                 <Title level={3}>Candidatos</Title>
@@ -396,7 +442,7 @@ function App() {
                     />
                   </Col>
 
-                  <Button className="rank" type="primary" onClick={() => rankData(tableData, setRanks)}>Ranquear candidados</Button>
+                  <Button className="green-button manual-button" type="primary" onClick={() => rankData(tableData, setRanks)}>Ranquear Candidados</Button>
                 </Row>
               </>
             }
