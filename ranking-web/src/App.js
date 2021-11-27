@@ -499,8 +499,19 @@ function App() {
         onCancel={() => setModalVisible(false)}
         footer={modalFooter}
       >
-        <p>some contents...</p>
-        <p>some contents...</p>
+        <p>
+          Essa ferramenta permite que candidatos sejam ranqueados com base num candidato ideal. Este contém os níveis de proficiência desejados em cada aspecto, e os outros candidatos contêm os seus respectivos niveis de proficiência. Quanto maior o nivel de proficiência de um candidato, maior o seu valor de rank final.
+        </p>
+
+        <p>
+          Cada aspecto pode ter diferentes conjuntos de níveis de proficiências, desde o mais genérico, e.g. Não Sabe e Sabe, até o mais granular, e.g. Nada, Básico, Médio, Avançado, Expert.
+        </p>
+        <p>
+          Para cada aspecto, as proficiências dos candidatos que são acima do desejado pelo candidato ideal podem ou não ser valorizadas. A valorização é dada pela presença do mérito. Na prática, significa que caso haja mérito em um requisito, as proficiências dos candidatos que são acima do desejado serão valorizadas baseadas no seu nivel (o maior, melhor), caso contrário, não serão valorizadas, ou seja, serão consideradas fossem iguais no valor de rank final.
+        </p>
+        <p>
+          O valor final de rank de cada candidato será um agrupamento das comparações de suas proficiências com o que é desejado e o mérito.
+        </p>
       </Modal>
     </Layout>
   );
