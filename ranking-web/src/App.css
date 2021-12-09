@@ -19,13 +19,14 @@
   margin-top: 2%
 }
 
-.green-button {
-  background-color: #05a505 !important;
-  border-color: #05a505 !important
+.next-button {
+  border-color: #1890ff !important;
+  color:  #1890ff !important;
 }
 
 .manual-button {
-  margin-top: 15px;
+  margin-top: 2%;
+  margin-bottom: 2%;
 }
 
 .ant-table-container table > thead > tr:first-child th:first-child {

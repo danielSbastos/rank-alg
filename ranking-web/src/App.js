@@ -3,15 +3,18 @@ import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
 
 import sampleData from './sampleData';
 import randomizeData from './randomizeData';
+import FileReader from './FileReader';
 
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Modal, InputNumber, Typography, Layout, Divider, Row, Col, Menu, Checkbox, Table, Button } from 'antd';
+import { Collapse, Modal, InputNumber, Typography, Layout, Divider, Row, Col, Menu, Checkbox, Table, Button } from 'antd';
 import { Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
+import { CaretRightOutlined } from '@ant-design/icons';
 
 const { Header, Sider, Content } = Layout;
 const { Title, Text } = Typography;
+const { Panel } = Collapse;
 
 const escalas = [
   {
@@ -123,7 +126,7 @@ const renderItem = (text, record, column, data, setData) => {
   } else if (record.key === 'merit') {
     return (
       <Checkbox
-        checked={data.merits[column]}
+        checked={get(['merits', column], data)}
         onChange={(e) => setData({
           ...data,
           merits: {
@@ -244,6 +247,14 @@ const sortRanks = ranks => {
     .map((rank, idxRank) => ({ ...rank, order: idxRank + 1 }));
 };
 
+const attributeMapping = {
+  nada: 'Nada',
+  basico: 'Básico',
+  medio: 'Médio',
+  avancado: 'Avançado',
+  expert: 'Expert',
+};
+
 function App() {
   const [tableData, setTableData] = useState({ escalas: {}, objects: {} });
   const [ranks, setRanks] = useState({});
@@ -253,6 +264,11 @@ function App() {
   const [sampleLoading, setSampleLoading] = useState(false);
   const [sample, setSample] = useState(false);
   const [showInfoCheckbox, setShowInfoCheckbox] = useState(true);
+  const [uploadData, setUploadData] = useState([]);
+  const [uploadDataLoading, setUploadDataLoading] = useState(null);
+  const [activeKeys, setActiveKeys] = useState([]);
+  const [showCandidates, setShowCandidates] = useState(false);
+  const [disabledSteps, setDisabledSteps] = useState([]);
 
   const showIntro = localStorage.getItem("showIntro");
   const [modalVisible, setModalVisible] = useState(showIntro === 'true' || showIntro === null);
@@ -265,9 +281,12 @@ function App() {
     if (newAttributesNum !== numAttributes) setNumAttributes(newAttributesNum);
     if ((newCandidatesNum - 1) !== numCandidates) setNumCandidates(newCandidatesNum - 1);
 
+    if (disabledSteps.length > 0) setDisabledSteps([]);
     setTableData(randomData);
     setSampleLoading(true);
     setSample(true);
+    setActiveKeys(['2', '3']);
+    setShowCandidates(true);
   };
 
   const handleGenManual = () => {
@@ -275,14 +294,20 @@ function App() {
     setTableData({ escalas: {}, objects: {} });
     setSample(false);
     setStep(0);
+    setActiveKeys(['1']);
+    setDisabledSteps(['2', '3']);
   }
 
   const handleGenSampleData = (sampleData) => {
+    if (disabledSteps.length > 0) setDisabledSteps([]);
+
     setNumAttributes(Object.keys(sampleData.escalas).length);
     setNumCandidates(Object.keys(sampleData.objects).length - 1);
     setTableData(sampleData);
     setSampleLoading(true);
     setSample(true);
+    setActiveKeys(['2', '3']);
+    setShowCandidates(true);
   };
 
   useEffect(() => {
@@ -337,6 +362,40 @@ function App() {
 
   }, [numCandidates]);
 
+  useEffect(() => {
+    const result = {};
+    let values;
+
+    if (uploadData.length > 0) {
+      const keys = genAttributes(numAttributes, true);
+
+      uploadData.forEach((_data, idx) => {
+        result[idx + 1] = {};
+        values = Object.values(_data).map(d => attributeMapping[d.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()]); 
+
+        keys.forEach((key, i) => result[idx + 1][key] = values[i]);
+      });
+
+      setTableData({
+        ...tableData,
+        objects: {
+          ...result,
+          'ideal-candidate': tableData.objects['ideal-candidate']
+        }
+      });
+
+      setUploadDataLoading(false);
+      setNumCandidates(Object.keys(result).length);
+      setShowCandidates(true);
+    }
+  }, [uploadData]);
+
+  useEffect(() => {
+    if (uploadDataLoading === false) {
+      setStep(2);
+    }
+  }, [uploadDataLoading])
+
   const modalFooter = [
     <Button key="ok" type="primary" onClick={() => setModalVisible(false)}>
       Ok
@@ -349,6 +408,21 @@ function App() {
         Não mostrar mais essa mensagem
       </Checkbox>
     )
+  }
+
+  const handleUploadData = (data) => {
+    setUploadData(data)
+  }
+
+  const handleNextMetadata = () => {
+    setStep(1); 
+    setActiveKeys(['2']);
+    setDisabledSteps(['3']);
+  }
+
+  const handleNextExpected = () => {
+    setActiveKeys(['3']);
+    setDisabledSteps([]);
   }
 
   return (
@@ -372,68 +446,62 @@ function App() {
 
             <Divider />
 
-            <Button type="danger" onClick={() => { setModalVisible(true); setShowInfoCheckbox(false) }}>Exibir Funcionamento</Button>
+            <Button type="primary" onClick={() => { setModalVisible(true); setShowInfoCheckbox(false) }}>Exibir funcionamento</Button>
           </div>
         </Sider>
 
         <Content>
          <div className="App">
            <Title level={3}>Ambiente de Configuração</Title>
-           <Row>
+            <Row style={{ marginBottom: '2%' }}>
              <Col>
-               <Button className="rank" type="primary" onClick={handleGenManual}>Definir Manualmente</Button>
+               <Button className="rank" type="primary" onClick={handleGenManual}>Inserir candidatos</Button>
              </Col>
 
              <Col>
               <Divider type="vertical" />
-              <Button className="rank" type="primary" onClick={() => handleGenSampleData(sampleData)}>Gerar Exemplo</Button>
+              <Button className="rank" type="primary" onClick={() => handleGenSampleData(sampleData)}>Gerar exemplo</Button>
              </Col>
 
              <Col>
               <Divider type="vertical" />
-              <Button className="rank" type="primary" onClick={handleGenRandomData}>Gerar Aleatório</Button>
-
+              <Button className="rank" type="primary" onClick={handleGenRandomData}>Gerar candidatos aleatórios</Button>
              </Col>
            </Row>
 
-           {(step >= 0 && !sample) &&
-            <>
-            <Divider />
-              <div className="manage">
-                <Row className="step-0" gutter={8}>
-                  <Col className="gutter-row">
-                    <label>Quantidade de aspectos:
-                      <InputNumber
-                        style={{ marginLeft: '5px', width: '60px' }}
-                        min={0}
-                        max={10}
-                        defaultValue={0}
-                        onChange={(value) => setNumAttributes(value)}
-                      />
-                    </label>
-                  </Col>
-                  <Col className="gutter-row">
-                    <label>Quantidade de candidatos:
-                      <InputNumber
-                        style={{ marginLeft: '5px', width: '60px' }}
-                        min={0}
-                        max={10}
-                        defaultValue={0}
-                        onChange={(value) => setNumCandidates(value)}
-                      />
-                    </label>
-                  </Col>
-                  <Col>
-                    <Button className="green-button" type="primary" onClick={() => setStep(1)}>Próximo</Button>
-                  </Col>
-                </Row>
-              </div>
-            </>
-          }
+            <Collapse
+              defaultActiveKey={['1']}
+              bordered={false} 
+              activeKey={activeKeys} 
+              onChange={(keys) => setActiveKeys(keys)}
+              expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
+              className="site-collapse-custom-collapse"
+            >
+             {(step >= 0 && !sample) &&
+              <Panel header="Metadados" key="1" >
+                <div className="manage">
+                  <Row className="step-0" gutter={8}>
+                    <Col className="gutter-row">
+                      <label>Quantidade de aspectos:
+                        <InputNumber
+                          style={{ marginLeft: '5px', width: '60px' }}
+                          min={0}
+                          max={10}
+                          defaultValue={0}
+                          onChange={(value) => setNumAttributes(value)}
+                        />
+                      </label>
+                    </Col>
+                    <Col>
+                     <Button className="next-button" onClick={handleNextMetadata}>Próximo</Button>
+                    </Col>
+                  </Row>
+                </div>
+              </Panel>
+            }
 
-          {step >= 1 &&
-            <>
-              <Divider />
+            {step >= 0 &&
+                <Panel header="Definição do esperado" key="2" collapsible={disabledSteps.includes("2") ? "disabled" : ""}>
                 <Row className="step-1">
                   <Col span={24}>
                     <Table
@@ -444,31 +512,60 @@ function App() {
                     />
                   </Col>
 
-                  {step === 1 && <Button className="green-button manual-button" type="primary" onClick={() => setStep(2)}>Definir Candidatos</Button>}
-              </Row>
-            </>
-          }
-
-          {step >= 2 &&
-              <>
-                <Divider />
-                <Title level={3}>Candidatos</Title>
-                <Row className="step-1">
-                  <Col span={24}>
-                    <Table
-                      pagination={false}
-                      className="table-striped-rows"
-                      columns={buildColumns(genAttributes(numAttributes), tableData, setTableData)}
-                      dataSource={genData(numCandidates)}
-                    />
-                  </Col>
-
-                  <Button className="green-button manual-button" type="primary" onClick={() => rankData(tableData, setRanks)}>Ranquear Candidados</Button>
+                  <Button className="next-button manual-button" onClick={handleNextExpected}>Próximo</Button>
                 </Row>
-              </>
+              </Panel>
             }
+
+            {step >= 0 &&
+                <Panel header="Candidatos" key="3" collapsible={disabledSteps.includes("3") ? "disabled" : ""}>
+                  {!sample &&
+                    <Row>
+                      <Col span={8}>
+                        <Button className="next-button manual-button" onClick={() => setShowCandidates(true)}>Inserir manualmente</Button>
+                        <label style={{ margin: '0 2%' }}>Ou</label>
+                        <FileReader setData={handleUploadData} />
+                      </Col>
+                    </Row>
+                  }
+
+                  {showCandidates &&
+                    <>
+                      <Row className="step-1" gutter={24}>
+                        <Col className="gutter-row">
+                          <label>Quantidade de candidatos:
+                            <InputNumber
+                              style={{ marginLeft: '5px', width: '60px' }}
+                              min={0}
+                              max={10000}
+                              value={numCandidates}
+                              defaultValue={0}
+                              onChange={(value) => setNumCandidates(value)}
+                            />
+                          </label>
+                        </Col>
+                        <Col>
+                          {numCandidates > 0 &&
+                            <Button type="primary" onClick={() => rankData(tableData, setRanks)}>Ranquear candidados</Button>
+                          }
+                        </Col>
+                      </Row>
+                      <Table
+                        scroll={{ y: 'calc(100vh - 10em)' }}
+                        pagination={false}
+                        className="table-striped-rows"
+                        columns={buildColumns(genAttributes(numAttributes), tableData, setTableData)}
+                        dataSource={genData(numCandidates)}
+                      />
+                    </>
+                  }
+                </Panel>
+              }
+            </Collapse>
           </div>
         </Content>
+
+
         <Sider width={'25%'}>
           <div style={{ padding: '6% 8%'}}>
             <Title level={3} style={{ color: 'white' }}>Resultados</Title>

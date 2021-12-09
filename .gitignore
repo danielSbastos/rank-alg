@@ -1,4 +1,5 @@
-.ipynb_checkpoints/
+.sudo apt -y install nodejs
+ipynb_checkpoints/
 
 *.aux
 *.log
@@ -6,3 +7,5 @@
 *.synctex.gz
 
 ranking-web/node_modules/
+
+**/*.swp
