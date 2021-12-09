@@ -54,18 +54,7 @@ const configData = [
   }
 ];
 
-const keyNameData = {
-  '1': 'Candidato 1',
-  '2': 'Candidato 2',
-  '3': 'Candidato 3',
-  '4': 'Candidato 4',
-  '5': 'Candidato 5',
-  '6': 'Candidato 6',
-  '7': 'Candidato 7',
-  '8': 'Candidato 8',
-  '9': 'Candidato 9',
-  '10': 'Candidato 10',
-};
+const keyNameData = i => `Candidato ${i}`;
 
 const escalasMenu = (column, data, setData) => (
   <Menu
@@ -242,7 +231,7 @@ const merge = (obj1, obj2) => {
 const sortRanks = ranks => {
   return Object
     .entries(ranks)
-    .map(rank => ({ key: rank[0], object: keyNameData[rank[0]], rankValue: rank[1]} ))
+    .map(rank => ({ key: rank[0], object: keyNameData(rank[0]), rankValue: rank[1]} ))
     .sort((a, b) => a.rankValue > b.rankValue ? -1 : 1)
     .map((rank, idxRank) => ({ ...rank, order: idxRank + 1 }));
 };
@@ -426,8 +415,8 @@ function App() {
   }
 
   return (
-    <Layout style={{ height: '70vmax' }}>
-      <Header style={{ height: '90px', paddingLeft: '15%', paddingTop: '20px' }}>
+		<Layout style={{height: '180vh' }}>
+      <Header style={{ paddingLeft: '15%', paddingTop: '20px' }}>
         <Title level={2} style={{ color: 'white' }}>Ranqueamento de Candidatos</Title>
       </Header>
       <Layout>
@@ -501,7 +490,7 @@ function App() {
             }
 
             {step >= 0 &&
-                <Panel header="Definição do esperado" key="2" collapsible={disabledSteps.includes("2") ? "disabled" : ""}>
+                <Panel header="Escalas, méritos e candidato desejado" key="2" collapsible={disabledSteps.includes("2") ? "disabled" : ""}>
                 <Row className="step-1">
                   <Col span={24}>
                     <Table
@@ -546,7 +535,7 @@ function App() {
                         </Col>
                         <Col>
                           {numCandidates > 0 &&
-                            <Button type="primary" onClick={() => rankData(tableData, setRanks)}>Ranquear candidados</Button>
+														<Button type="primary" style={{ backgroundColor: '#11ab11', borderColor: '#11ab11' }} onClick={() => rankData(tableData, setRanks)}>Ranquear candidados</Button>
                           }
                         </Col>
                       </Row>

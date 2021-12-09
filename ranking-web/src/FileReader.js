@@ -1,7 +1,7 @@
 import React from 'react';
 import Papa from 'papaparse';
 
-import { Modal, InputNumber, Typography, Layout, Divider, Row, Col, Menu, Checkbox, Table, Button } from 'antd';
+import { Button } from 'antd';
 
 class FileReader extends React.Component {
   constructor() {
