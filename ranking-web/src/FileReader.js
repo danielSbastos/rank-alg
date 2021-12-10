@@ -28,6 +28,7 @@ class FileReader extends React.Component {
 
   updateData(result) {
     var data = result.data;
+    data.pop()
     this.props.setData(data);
   }
 
