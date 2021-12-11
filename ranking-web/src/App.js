@@ -25,7 +25,7 @@ const escalas = [
   {
     id: 3,
     n: 3,
-    data: ['Básico', 'Médio', 'Avançado']
+    data: ['Nada', 'Básico', 'Médio']
   },
   {
     id: 4,
