@@ -9,3 +9,5 @@ ipynb_checkpoints/
 ranking-web/node_modules/
 
 **/*.swp
+
+notebooks/.ipynb_checkpoints/
