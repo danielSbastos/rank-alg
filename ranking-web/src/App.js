@@ -182,7 +182,8 @@ const rankData = async ({ objects, merits, escalas }, setRanks) => {
 const resultColums = [
   { title: 'Candidato', dataIndex: 'object', key: 'object' },
   { title: 'Ordem', dataIndex: 'order', key: 'order' },
-  { title: 'Valor', dataIndex: 'rankValue', key: 'rankValue' }
+  { title: 'Valor', dataIndex: 'rankValue', key: 'rankValue' },
+  { title: 'Porcentagem', dataIndex: 'percentage', key: 'percentage' },
 ];
 
 const genAttributes = (n, ignoreFirst) => {
@@ -231,7 +232,7 @@ const merge = (obj1, obj2) => {
 const sortRanks = ranks => {
   return Object
     .entries(ranks)
-    .map(rank => ({ key: rank[0], object: keyNameData(rank[0]), rankValue: rank[1]} ))
+    .map(rank => ({ key: rank[0], object: keyNameData(rank[0]), rankValue: rank[1].rank, percentage: `${(Math.round(rank[1].percentage * 100) * 100) / 100}%` }))
     .sort((a, b) => a.rankValue > b.rankValue ? -1 : 1)
     .map((rank, idxRank) => ({ ...rank, order: idxRank + 1 }));
 };
@@ -414,6 +415,10 @@ function App() {
     setDisabledSteps([]);
   }
 
+  const rankCandidates = () => {
+    rankData(tableData, setRanks)
+  }
+
   return (
 		<Layout style={{height: '180vh' }}>
       <Header style={{ paddingLeft: '15%', paddingTop: '20px' }}>
@@ -535,7 +540,7 @@ function App() {
                         </Col>
                         <Col>
                           {numCandidates > 0 &&
-														<Button type="primary" style={{ backgroundColor: '#11ab11', borderColor: '#11ab11' }} onClick={() => rankData(tableData, setRanks)}>Ranquear candidados</Button>
+														<Button type="primary" style={{ backgroundColor: '#11ab11', borderColor: '#11ab11' }} onClick={rankCandidates}>Ranquear candidados</Button>
                           }
                         </Col>
                       </Row>
