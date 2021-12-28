@@ -179,11 +179,19 @@ const rankData = async ({ objects, merits, escalas }, setRanks) => {
   });
 };
 
+const candidateCell = ({ name, perc }) => {
+  return (
+    <>
+      <p style={{ margin: 0 }}>{name}</p>
+      <label style={{ color: 'gray', fontSize: '12px' }}>{perc}</label>
+    </>
+  );
+}
+
 const resultColums = [
-  { title: 'Candidato', dataIndex: 'object', key: 'object' },
+  { title: 'Candidato', dataIndex: 'object', key: 'object', render: (text, row, index) => candidateCell(text) },
   { title: 'Ordem', dataIndex: 'order', key: 'order' },
-  { title: 'Valor', dataIndex: 'rankValue', key: 'rankValue' },
-  { title: 'Porcentagem', dataIndex: 'percentage', key: 'percentage' },
+  { title: 'Valor', dataIndex: 'rankValue', key: 'rankValue' }
 ];
 
 const genAttributes = (n, ignoreFirst) => {
@@ -232,7 +240,7 @@ const merge = (obj1, obj2) => {
 const sortRanks = ranks => {
   return Object
     .entries(ranks)
-    .map(rank => ({ key: rank[0], object: keyNameData(rank[0]), rankValue: rank[1].rank, percentage: `${(Math.round(rank[1].percentage * 100) * 100) / 100}%` }))
+    .map(rank => ({ key: rank[0], object: { name: keyNameData(rank[0]), perc: rank[1].percentage }, rankValue: rank[1].rank } ))
     .sort((a, b) => a.rankValue > b.rankValue ? -1 : 1)
     .map((rank, idxRank) => ({ ...rank, order: idxRank + 1 }));
 };
@@ -361,7 +369,7 @@ function App() {
 
       uploadData.forEach((_data, idx) => {
         result[idx + 1] = {};
-        values = Object.values(_data).map(d => attributeMapping[d.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()]); 
+        values = Object.values(_data).map(d => attributeMapping[d.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()]);
 
         keys.forEach((key, i) => result[idx + 1][key] = values[i]);
       });
@@ -405,7 +413,7 @@ function App() {
   }
 
   const handleNextMetadata = () => {
-    setStep(1); 
+    setStep(1);
     setActiveKeys(['2']);
     setDisabledSteps(['3']);
   }
@@ -413,10 +421,6 @@ function App() {
   const handleNextExpected = () => {
     setActiveKeys(['3']);
     setDisabledSteps([]);
-  }
-
-  const rankCandidates = () => {
-    rankData(tableData, setRanks)
   }
 
   return (
@@ -465,8 +469,8 @@ function App() {
 
             <Collapse
               defaultActiveKey={['1']}
-              bordered={false} 
-              activeKey={activeKeys} 
+              bordered={false}
+              activeKey={activeKeys}
               onChange={(keys) => setActiveKeys(keys)}
               expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
               className="site-collapse-custom-collapse"
@@ -540,7 +544,7 @@ function App() {
                         </Col>
                         <Col>
                           {numCandidates > 0 &&
-														<Button type="primary" style={{ backgroundColor: '#11ab11', borderColor: '#11ab11' }} onClick={rankCandidates}>Ranquear candidados</Button>
+														<Button type="primary" style={{ backgroundColor: '#11ab11', borderColor: '#11ab11' }} onClick={() => rankData(tableData, setRanks)}>Ranquear candidados</Button>
                           }
                         </Col>
                       </Row>
@@ -572,6 +576,7 @@ function App() {
 
             {Object.keys(ranks).length > 0 ?
               <Table
+                size="middle"
                 className='results'
                 pagination={false}
                 columns={resultColums}
