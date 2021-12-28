@@ -175,11 +175,19 @@ const rankData = async ({ objects, merits, escalas }, setRanks) => {
   });
 };
 
+const candidateCell = ({ name, perc }) => {
+  return (
+    <>
+      <p style={{ margin: 0 }}>{name}</p>
+      <label style={{ color: 'gray', fontSize: '12px' }}>{perc}</label>
+    </>
+  );
+}; 
+
 const resultColums = [
-  { title: 'Candidato', dataIndex: 'object', key: 'object' },
+  { title: 'Candidato', dataIndex: 'object', key: 'object', render: (text, row, index) => candidateCell(text) },
   { title: 'Ordem', dataIndex: 'order', key: 'order' },
   { title: 'Valor', dataIndex: 'rankValue', key: 'rankValue' },
-  { title: 'Porcentagem', dataIndex: 'percentage', key: 'percentage' },
 ];
 
 const genAttributes = (n, ignoreFirst) => {
@@ -228,7 +236,7 @@ const merge = (obj1, obj2) => {
 const sortRanks = ranks => {
   return Object
     .entries(ranks)
-    .map(rank => ({ key: rank[0], object: keyNameData(rank[0]), rankValue: rank[1].rank, percentage: `${(Math.round(rank[1].percentage * 100) * 100) / 100}%` }))
+    .map(rank => ({ key: rank[0], object: { name: keyNameData(rank[0]), perc: rank[1].percentage }, rankValue: rank[1].rank } ))
     .sort((a, b) => a.rankValue > b.rankValue ? -1 : 1)
     .map((rank, idxRank) => ({ ...rank, order: idxRank + 1 }));
 };
