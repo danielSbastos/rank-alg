@@ -179,7 +179,7 @@ const candidateCell = ({ name, perc }) => {
   return (
     <>
       <p style={{ margin: 0 }}>{name}</p>
-      <label style={{ color: 'gray', fontSize: '12px' }}>{perc}</label>
+      <label style={{ color: 'gray', fontSize: '14px' }}>{perc}</label>
     </>
   );
 }; 
