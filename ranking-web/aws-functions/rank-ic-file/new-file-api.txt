@@ -1,0 +1,12 @@
+@metadados
+numAspectos 2
+niveisPorAspecto 2 3
+meritos True False
+
+@candidatoDesejado
+nivel 1 1
+
+@candidatos
+nivel 2 3
+nivel 2 2
+nivel 2 1
