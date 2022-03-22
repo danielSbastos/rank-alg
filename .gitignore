@@ -11,3 +11,5 @@ ranking-web/node_modules/
 **/*.swp
 
 notebooks/.ipynb_checkpoints/
+
+ranking-web/aws-functions/rank-ic-file/node_modules/**/*
