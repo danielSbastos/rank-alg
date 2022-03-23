@@ -75,7 +75,7 @@ function getMetadata(meta) {
 function getIdealCandidate(ideal, hash, n) {
     let values = ideal[0].replace('nivel ', '').split(' ');
     for (i = 0; i < n; i++) {
-        hash[i+1].value = parseInt(values[i])
+        hash[i+1].value = parseInt(values[i]) - 1
     }
     return hash
 }
@@ -87,7 +87,7 @@ function getCandidates(candidates, n) {
       values = candidate.replace('nivel ', '').split(' ')
       hash = {}
       for (i = 0; i < n; i++) {
-        hash[i+1] = parseInt(values[i])
+        hash[i+1] = parseInt(values[i]) - 1
       }
       cands.push(hash)
     })
