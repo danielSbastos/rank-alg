@@ -250,7 +250,6 @@ function App() {
   const [activeKeys, setActiveKeys] = useState(['1']);
 
   const showIntro = localStorage.getItem("showIntro");
-  const [modalVisible, setModalVisible] = useState(showIntro === 'true' || showIntro === null);
 
   useEffect(() => {
     const updateObjects = (objs, numAttributes) => {
@@ -296,20 +295,6 @@ function App() {
 
   }, [numCandidates]);
 
-  const modalFooter = [
-    <Button key="ok" type="primary" onClick={() => setModalVisible(false)}>
-      Ok
-    </Button>
-  ];
-
-  if (showInfoCheckbox) {
-    modalFooter.unshift(
-      <Checkbox onChange={(e) => localStorage.setItem("showIntro", !e.target.checked)}>
-        Não mostrar mais essa mensagem
-      </Checkbox>
-    )
-  }
-
   const handleNextMetadata = () => {
     setActiveKeys(['2']);
   }
@@ -336,10 +321,6 @@ function App() {
 
             <Title level={5} style={{ color: 'white' }}>Mérito</Title>
             <Text style={{ color: 'white' }}>Valorização das proficiências dos candidatos que são acima do que é desejado naquele aspecto.</Text>
-
-            <Divider />
-
-            <Button type="primary" onClick={() => { setModalVisible(true); setShowInfoCheckbox(false) }}>Exibir funcionamento</Button>
           </div>
         </Sider>
 
@@ -444,28 +425,6 @@ function App() {
           </div>
         </Sider>
       </Layout>
-
-      <Modal
-        title="Funcionamento"
-        centered
-        visible={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        footer={modalFooter}
-      >
-        <p>
-          Essa ferramenta permite que candidatos sejam ranqueados com base num candidato ideal. Este contém os níveis de proficiência desejados em cada aspecto, e os outros candidatos contêm os seus respectivos niveis de proficiência. Quanto maior o nivel de proficiência de um candidato, maior o seu valor de rank final.
-        </p>
-
-        <p>
-          Cada aspecto pode ter diferentes conjuntos de níveis de proficiências, desde o mais genérico, e.g. Não Sabe e Sabe, até o mais granular, e.g. Nada, Básico, Médio, Avançado, Expert.
-        </p>
-        <p>
-          Para cada aspecto, as proficiências dos candidatos que são acima do desejado pelo candidato ideal podem ou não ser valorizadas. A valorização é dada pela presença do mérito. Na prática, significa que caso haja mérito em um requisito, as proficiências dos candidatos que são acima do desejado serão valorizadas baseadas no seu nivel (o maior, melhor), caso contrário, não serão valorizadas, ou seja, serão consideradas fossem iguais no valor de rank final.
-        </p>
-        <p>
-          O valor final de rank de cada candidato será um agrupamento das comparações de suas proficiências com o que é desejado e o mérito.
-        </p>
-      </Modal>
     </Layout>
   );
 }
