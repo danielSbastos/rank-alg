@@ -37,6 +37,10 @@ const escalas = [
 
 const configData = [
   {
+    key: 'weight',
+    '-': 'Peso',
+  },
+  {
     key: 'scale',
     '-': 'Escala',
   },
@@ -59,7 +63,10 @@ const escalasMenu = (column, data, setData) => (
         ...data,
         escalas: {
           ...data.escalas,
-          [column]: escalas.find(escala => escala.id.toString() === e.key)
+          [column]: { 
+            weight: data.escalas[column]?.weight,
+            ...escalas.find(escala => escala.id.toString() === e.key)
+          }
         }
       });
     }}>
@@ -98,6 +105,27 @@ const valoresEscalaMenu = (escala, column, objName, data, setData) => {
   );
 };
 
+const handleOnChangeWeight = (value, data, column, setData) => {
+  const escalas = Object.assign({}, data.escalas);
+  delete escalas[column];
+
+  let totalWeight = Object.values(escalas).reduce((acc, cur) => acc + cur.weight, 0)
+  if (totalWeight + value > 1) {
+    alert('A soma dos pesos não pode ultrapassar 1')
+  } else {
+    setData({
+      ...data,
+      escalas: {
+        ...data.escalas,
+        [column]: {
+          ...data.escalas[column],
+          weight: value,
+        }
+      }
+    })
+  }
+}
+
 
 const renderItem = (text, record, column, data, setData) => {
   if (record.key === 'scale') {
@@ -120,6 +148,17 @@ const renderItem = (text, record, column, data, setData) => {
           }})}
       />
     );
+  } else if (record.key === 'weight') {
+    return (
+      <InputNumber
+        step={0.1}
+        min={0}
+        max={1}
+        defaultValue={0}
+        value={data.escalas[column]?.weight || 0}
+        onChange={(value) => handleOnChangeWeight(value, data, column, setData)}
+      />
+    )
   };
 
   let escala = escalas.find(escala => escala.id === data.escalas[column]?.id);
