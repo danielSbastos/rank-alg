@@ -16,22 +16,22 @@ const escalas = [
   {
     id: 2,
     n: 2,
-    data: ['Nível 1', 'Nível 2']
+    data: ['Não sabe', 'Sabe']
   },
   {
     id: 3,
     n: 3,
-    data: ['Nível 1', 'Nível 2', 'Nível 3']
+    data: ['Não sabe', 'Básico', 'Intermediário']
   },
   {
     id: 4,
     n: 4,
-    data: ['Nível 1', 'Nível 2', 'Nível 3', 'Nível 4']
+    data: ['Não sabe', 'Básico', 'Intermediário', 'Avançado']
   },
   {
     id: 5,
     n: 5,
-    data: ['Nível 1', 'Nível 2', 'Nível 3', 'Nível 4', 'Nível 5']
+    data: ['Não sabe', 'Básico', 'Intermediário', 'Avançado', 'Expert']
   }
 ];
 
