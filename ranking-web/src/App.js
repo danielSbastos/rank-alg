@@ -7,6 +7,7 @@ import { Collapse, Modal, InputNumber, Typography, Layout, Divider, Row, Col, Me
 import { Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { CaretRightOutlined } from '@ant-design/icons';
+import FileReader from './FileReader';
 
 const { Header, Sider, Content } = Layout;
 const { Title, Text } = Typography;
@@ -182,7 +183,7 @@ const candidateCell = ({ name, perc }) => {
       <label style={{ color: 'gray', fontSize: '14px' }}>{perc}</label>
     </>
   );
-}; 
+};
 
 const resultColums = [
   { title: 'Candidato', dataIndex: 'object', key: 'object', render: (text, row, index) => candidateCell(text) },
@@ -303,6 +304,29 @@ function App() {
     setActiveKeys(['3']);
   }
 
+  const uploadFile = async () => {
+    const formData = new FormData();
+    const imagefile = document.querySelector('#file');
+    formData.append("image", imagefile.files[0]);
+    const response = await axios.post('https://6bbt8vjusc.execute-api.us-east-2.amazonaws.com/json/csv', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+    })
+
+    const downloadTxtFile = (response) => {
+      const element = document.createElement("a");
+      const file = new Blob([Object.entries(response.data.body)], {
+        type: "text/plain"
+      });
+      element.href = URL.createObjectURL(file);
+      element.download = "ranking.txt";
+      document.body.appendChild(element);
+      element.click();
+    };
+    downloadTxtFile(response)
+  }
+
   return (
 		<Layout style={{height: '180vh' }}>
       <Header style={{ paddingLeft: '15%', paddingTop: '20px' }}>
@@ -343,7 +367,7 @@ function App() {
                         <InputNumber
                           style={{ marginLeft: '5px', width: '60px' }}
                           min={0}
-                          max={3}
+                          max={5}
                           defaultValue={0}
                           onChange={(value) => setNumAttributes(value)}
                         />
@@ -399,6 +423,7 @@ function App() {
                   />
                 </Panel>
             </Collapse>
+            <FileReader handleChange={uploadFile} />
           </div>
         </Content>
 
@@ -409,7 +434,7 @@ function App() {
             <Text style={{ color: 'white' }}>Interpretando o "Valor":</Text>
             <ul style={{ color: 'white' }}>
               <li><b>Entre -1 e 0:</b> proficiências dos aspectos do candidato estão abaixas das desejadas;</li>
-              <li><b>Igual à 0:</b> proficiências estão iguais às desejadas;</li>
+              <li><b>Igual a 0:</b> proficiências estão iguais às desejadas;</li>
               <li><b>Entre 0 e 1:</b> proficiências estão acima das desejadas.</li>
             </ul>
 
