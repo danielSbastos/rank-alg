@@ -318,7 +318,7 @@ function App() {
 
     const downloadTxtFile = (response) => {
       const element = document.createElement("a");
-      const file = new Blob([Object.entries(response.data.body)], {
+      const file = new Blob([response.data.body.data], {
         type: "text/plain"
       });
       element.href = URL.createObjectURL(file);
