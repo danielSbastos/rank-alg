@@ -1,3 +1,5 @@
+const multipart = require("parse-multipart");
+
 const rank = (i, j, c) => {
   let n, d;
 
@@ -13,6 +15,11 @@ const rank = (i, j, c) => {
   return [n, d]
 }
 
+const scaleMapping = {
+  2: { NaoSabe: 1, Sabe: 2 },
+  3: { NaoSabe: 1, Basico: 2, Intermediario: 3 },
+  4: { NaoSabe: 1, Basico: 2, Intermediario: 3, Avancado: 4 }
+}
 
 const rankData = (metadata, candidates) => {
   const ranks = {}
@@ -23,8 +30,8 @@ const rankData = (metadata, candidates) => {
     Object.entries(candidate).forEach(item => {
       attrId = item[0]
       attrVal = item[1]
-      i = attrVal / metadata[attrId].n
-      j = metadata[attrId].value / metadata[attrId].n
+      i = (attrVal - 1) / (metadata[attrId].n - 1)
+      j = (metadata[attrId].value - 1) / (metadata[attrId].n - 1)
       c = metadata[attrId].merit ? 1 : 0
 
       const result = rank(i, j, c)
@@ -38,22 +45,21 @@ const rankData = (metadata, candidates) => {
   return ranks
 }
 
-
 data = `@metadados
 numAspectos 4
-niveisPorAspecto 3 2 2 5
-meritos True False True True
+niveisPorAspecto 2 3 4 2
+meritos False True True True
 
 @candidatoDesejado
-nivel 2 1 1 3
+nivel Sabe Intermediario Intermediario Sabe
 
 @candidatos
-nivel 2 1 1 3
-nivel 2 1 1 3
-nivel 2 1 1 3
-nivel 2 1 1 3
-nivel 2 1 1 3`
-
+nivel Sabe Intermediario Avancado Sabe
+nivel Sabe Intermediario Intermediario Sabe
+nivel Sabe Basico Avancado Sabe
+nivel Sabe Intermediario Avancado NaoSabe
+nivel Sabe Basico Avancado NaoSabe
+`
 
 function removeEmpt (arr) { return arr.filter(element => {
   return element !== '';
@@ -67,7 +73,7 @@ function getMetadata(meta) {
     let merits = meta[2].replace('meritos ', '').split(' ')
 
     for (i = 0; i < parseInt(numAttr); i++) {
-        hash[i+1] = { n: parseInt(levelsAttr[i]) - 1, merit: (merits[i] === 'True' || merits[i] === 'true') }
+        hash[i+1] = { n: parseInt(levelsAttr[i]), merit: (merits[i] === 'True' || merits[i] === 'true') }
     }
     return [hash, numAttr]
 }
@@ -75,19 +81,22 @@ function getMetadata(meta) {
 function getIdealCandidate(ideal, hash, n) {
     let values = ideal[0].replace('nivel ', '').split(' ');
     for (i = 0; i < n; i++) {
-        hash[i+1].value = parseInt(values[i]) - 1
+        let scaleKey = hash[''+(i + 1)].n
+        hash[i+1].value = scaleMapping[scaleKey][values[i]]
     }
+
     return hash
 }
 
-function getCandidates(candidates, n) {
+function getCandidates(candidates, metadata, n) {
     let cands = []
-    let value, hash
+    let hash
     candidates.forEach(candidate => {
       values = candidate.replace('nivel ', '').split(' ')
       hash = {}
       for (i = 0; i < n; i++) {
-        hash[i+1] = parseInt(values[i]) - 1
+        let scaleKey = metadata[''+(i + 1)].n
+        hash[i+1] = scaleMapping[scaleKey][values[i]]
       }
       cands.push(hash)
     })
@@ -95,17 +104,12 @@ function getCandidates(candidates, n) {
     return cands
 }
 
-
-
-const multipart = require("parse-multipart");
-const csv = require("csvtojson");
-
 exports.handler = async event => {
-    const body = Buffer.from(event["content"].toString(), "base64");
-    const headers = event["headers"]["content-type"];
-    const boundary = multipart.getBoundary(headers);
-    const buff = multipart.Parse(body, boundary);
-    const csvDataString = buff[0].data.toString("utf8");
+    const body = Buffer.from(event["content"].toString(), "base64")
+    const headers = event["headers"]["content-type"]
+    const boundary = multipart.getBoundary(headers)
+    const buff = multipart.Parse(body, boundary)
+    const csvDataString = buff[0].data.toString("utf8")
 
     const splited = csvDataString.split('@')
     const metadata = removeEmpt(splited[1].split('\n').slice(1))
@@ -123,4 +127,3 @@ exports.handler = async event => {
         'body': ranks
     }
 }
-
