@@ -22,7 +22,7 @@ const scaleMapping = {
 }
 
 const rankData = (metadata, candidates) => {
-  const ranks = {}
+  const ranks = []
   let attrId, attrVal, i, j, c, n, d
   candidates.forEach((candidate, idx) => {
     n = d = 0
@@ -39,7 +39,7 @@ const rankData = (metadata, candidates) => {
       n += result[0]
     })
 
-    ranks[idx + 1] = n/d
+    ranks.push(n/d)
   })
 
   return ranks
@@ -112,9 +112,9 @@ exports.handler = async event => {
     const csvDataString = buff[0].data.toString("utf8")
 
     const splited = csvDataString.split('@')
-    const metadata = removeEmpt(splited[1].split('\n').slice(1))
-    const idealCandidate = removeEmpt(splited[2].split('\n').slice(1))
-    const candidates = removeEmpt(splited[3].split('\n').slice(1))
+    let metadata = removeEmpt(splited[1].split('\n').slice(1))
+    let idealCandidate = removeEmpt(splited[2].split('\n').slice(1))
+    let candidates = removeEmpt(splited[3].split('\n').slice(1))
 
     const info = getMetadata(metadata)
     const infoMetaIdeal = getIdealCandidate(idealCandidate, info[0], info[1])
@@ -122,8 +122,18 @@ exports.handler = async event => {
 
     const ranks = rankData(infoMetaIdeal, infoCandidates)
 
+    metadata.splice(0, 0, '@metadados')
+    metadata = metadata.join('\n')
+
+    idealCandidate.splice(0, 0, '@candidatoDesejado')
+    idealCandidate = idealCandidate.join('\n')
+
+    candidates = ranks.map((rank, idx) => candidates[idx] + (' => ' + rank))
+    candidates.splice(0, 0, '@candidates')
+    candidates = candidates.join('\n')
+
     return {
         'statusCode': 200,
-        'body': ranks
+        'body': { data: metadata + '\n\n' + idealCandidate + '\n\n' + candidates }
     }
 }
