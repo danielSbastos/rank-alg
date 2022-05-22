@@ -72,7 +72,7 @@ function getMetadata(meta) {
     let levelsAttr = meta[1].replace('niveisPorAspecto ', '').split(' ')
     let merits = meta[2].replace('meritos ', '').split(' ')
 
-    for (i = 0; i < parseInt(numAttr); i++) {
+    for (let i = 0; i < parseInt(numAttr); i++) {
         hash[i+1] = { n: parseInt(levelsAttr[i]), merit: (merits[i] === 'True' || merits[i] === 'true') }
     }
     return [hash, numAttr]
@@ -80,7 +80,7 @@ function getMetadata(meta) {
 
 function getIdealCandidate(ideal, hash, n) {
     let values = ideal[0].replace('nivel ', '').split(' ');
-    for (i = 0; i < n; i++) {
+    for (let i = 0; i < n; i++) {
         let scaleKey = hash[''+(i + 1)].n
         hash[i+1].value = scaleMapping[scaleKey][values[i]]
     }
@@ -92,9 +92,9 @@ function getCandidates(candidates, metadata, n) {
     let cands = []
     let hash
     candidates.forEach(candidate => {
-      values = candidate.replace('nivel ', '').split(' ')
-      hash = {}
-      for (i = 0; i < n; i++) {
+      let values = candidate.replace('nivel ', '').split(' ')
+      let hash = {}
+      for (let i = 0; i < n; i++) {
         let scaleKey = metadata[''+(i + 1)].n
         hash[i+1] = scaleMapping[scaleKey][values[i]]
       }
