@@ -3,7 +3,7 @@ import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
 
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Collapse, Modal, InputNumber, Typography, Layout, Divider, Row, Col, Menu, Checkbox, Table, Button } from 'antd';
+import { Collapse, InputNumber, Typography, Layout, Row, Col, Menu, Checkbox, Table, Button } from 'antd';
 import { Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { CaretRightOutlined } from '@ant-design/icons';
@@ -247,10 +247,7 @@ function App() {
   const [ranks, setRanks] = useState({});
   const [numAttributes, setNumAttributes] = useState(0);
   const [numCandidates, setNumCandidates] = useState(0);
-  const [showInfoCheckbox, setShowInfoCheckbox] = useState(true);
   const [activeKeys, setActiveKeys] = useState(['1']);
-
-  const showIntro = localStorage.getItem("showIntro");
 
   useEffect(() => {
     const updateObjects = (objs, numAttributes) => {
@@ -316,7 +313,7 @@ function App() {
 
     const downloadTxtFile = (response) => {
       const element = document.createElement("a");
-      const file = new Blob([Object.entries(response.data.body)], {
+      const file = new Blob([response.data.body.data], {
         type: "text/plain"
       });
       element.href = URL.createObjectURL(file);
@@ -353,8 +350,8 @@ function App() {
            <Title level={3}>Ambiente de Configuração</Title>
            <Collapse
               defaultActiveKey={['1']}
-              bordered={false} 
-              activeKey={activeKeys} 
+              bordered={false}
+              activeKey={activeKeys}
               onChange={(keys) => setActiveKeys(keys)}
               expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
               className="site-collapse-custom-collapse"
@@ -440,6 +437,7 @@ function App() {
 
             {Object.keys(ranks).length > 0 ?
               <Table
+                size="middle"
                 className='results'
                 pagination={false}
                 columns={resultColums}
