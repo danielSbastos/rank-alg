@@ -45,7 +45,7 @@ const rankData = (metadata, candidates) => {
   return ranks
 }
 
-data = `@metadados
+let data = `@metadados
 numAspectos 4
 niveisPorAspecto 2 3 4 2
 meritos False True True True
