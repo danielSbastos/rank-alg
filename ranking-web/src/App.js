@@ -167,16 +167,11 @@ const buildColumns = (attributes, tableData, setTableData) => {
 const rankData = async ({ objects, merits, escalas }, setRanks) => {
   const objs = Object.assign({}, objects);
 
-  let config = {
-    headers: {'x-api-key': '2RF4nDJySO5DbCqIGQHeg1jGd9HU8qez4aQUE9dE'}
-  }
-
-
-  axios.post(`https://6bbt8vjusc.execute-api.us-east-2.amazonaws.com/staging`, {
+  axios.post(`https://6bbt8vjusc.execute-api.us-east-2.amazonaws.com/prod`, {
     merits,
     objects: objs,
     scales: escalas
-  }, config).then(res => {
+  }).then(res => {
     setRanks(res.data.body);
   });
 };
