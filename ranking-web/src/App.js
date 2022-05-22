@@ -1,16 +1,13 @@
 import './App.css';
 import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
 
-import sampleData from './sampleData';
-import randomizeData from './randomizeData';
-import FileReader from './FileReader';
-
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Collapse, Modal, InputNumber, Typography, Layout, Divider, Row, Col, Menu, Checkbox, Table, Button } from 'antd';
+import { Collapse, InputNumber, Typography, Layout, Row, Col, Menu, Checkbox, Table, Button } from 'antd';
 import { Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { CaretRightOutlined } from '@ant-design/icons';
+import FileReader from './FileReader';
 
 const { Header, Sider, Content } = Layout;
 const { Title, Text } = Typography;
@@ -20,22 +17,22 @@ const escalas = [
   {
     id: 2,
     n: 2,
-    data: ['Não Sabe', 'Sabe']
+    data: ['Não sabe', 'Sabe']
   },
   {
     id: 3,
     n: 3,
-    data: ['Nada', 'Básico', 'Médio']
+    data: ['Não sabe', 'Básico', 'Intermediário']
   },
   {
     id: 4,
     n: 4,
-    data: ['Nada', 'Básico', 'Médio', 'Avançado']
+    data: ['Não sabe', 'Básico', 'Intermediário', 'Avançado']
   },
   {
     id: 5,
     n: 5,
-    data: ['Nada', 'Básico', 'Médio', 'Avançado', 'Expert']
+    data: ['Não sabe', 'Básico', 'Intermediário', 'Avançado', 'Expert']
   }
 ];
 
@@ -188,15 +185,15 @@ const candidateCell = ({ name, perc }) => {
   return (
     <>
       <p style={{ margin: 0 }}>{name}</p>
-      <label style={{ color: 'gray', fontSize: '12px' }}>{perc}</label>
+      <label style={{ color: 'gray', fontSize: '14px' }}>{perc}</label>
     </>
   );
-}
+};
 
 const resultColums = [
   { title: 'Candidato', dataIndex: 'object', key: 'object', render: (text, row, index) => candidateCell(text) },
   { title: 'Ordem', dataIndex: 'order', key: 'order' },
-  { title: 'Valor', dataIndex: 'rankValue', key: 'rankValue' }
+  { title: 'Valor', dataIndex: 'rankValue', key: 'rankValue' },
 ];
 
 const genAttributes = (n, ignoreFirst) => {
@@ -250,82 +247,18 @@ const sortRanks = ranks => {
     .map((rank, idxRank) => ({ ...rank, order: idxRank + 1 }));
 };
 
-const attributeMapping = {
-  nada: 'Nada',
-  basico: 'Básico',
-  medio: 'Médio',
-  avancado: 'Avançado',
-  expert: 'Expert',
-};
-
 function App() {
   const [tableData, setTableData] = useState({ escalas: {}, objects: {} });
   const [ranks, setRanks] = useState({});
-  const [step, setStep] = useState(-1);
   const [numAttributes, setNumAttributes] = useState(0);
   const [numCandidates, setNumCandidates] = useState(0);
-  const [sampleLoading, setSampleLoading] = useState(false);
-  const [sample, setSample] = useState(false);
-  const [showInfoCheckbox, setShowInfoCheckbox] = useState(true);
-  const [uploadData, setUploadData] = useState([]);
-  const [uploadDataLoading, setUploadDataLoading] = useState(null);
-  const [activeKeys, setActiveKeys] = useState([]);
-  const [showCandidates, setShowCandidates] = useState(false);
-  const [disabledSteps, setDisabledSteps] = useState([]);
-
-  const showIntro = localStorage.getItem("showIntro");
-  const [modalVisible, setModalVisible] = useState(showIntro === 'true' || showIntro === null);
-
-  const handleGenRandomData = () => {
-    const randomData = randomizeData();
-    const newAttributesNum = Object.keys(randomData.escalas).length
-    const newCandidatesNum = Object.keys(randomData.objects).length
-
-    if (newAttributesNum !== numAttributes) setNumAttributes(newAttributesNum);
-    if ((newCandidatesNum - 1) !== numCandidates) setNumCandidates(newCandidatesNum - 1);
-
-    if (disabledSteps.length > 0) setDisabledSteps([]);
-    setTableData(randomData);
-    setSampleLoading(true);
-    setSample(true);
-    setActiveKeys(['2', '3']);
-    setShowCandidates(true);
-  };
-
-  const handleGenManual = () => {
-    setRanks({});
-    setTableData({ escalas: {}, objects: {} });
-    setSample(false);
-    setStep(0);
-    setActiveKeys(['1']);
-    setDisabledSteps(['2', '3']);
-  }
-
-  const handleGenSampleData = (sampleData) => {
-    if (disabledSteps.length > 0) setDisabledSteps([]);
-
-    setNumAttributes(Object.keys(sampleData.escalas).length);
-    setNumCandidates(Object.keys(sampleData.objects).length - 1);
-    setTableData(sampleData);
-    setSampleLoading(true);
-    setSample(true);
-    setActiveKeys(['2', '3']);
-    setShowCandidates(true);
-  };
-
-  useEffect(() => {
-    if (sampleLoading) {
-      setStep(2);
-      rankData(tableData, setRanks);
-      setSampleLoading(false);
-    }
-  }, [sampleLoading]);
+  const [activeKeys, setActiveKeys] = useState(['1']);
 
   useEffect(() => {
     const updateObjects = (objs, numAttributes) => {
       let r = {};
 
-      Object.entries(objs).map(entry => {
+      Object.entries(objs).forEach(entry => {
         const newObj = genAttributes(numAttributes, true);
         r[entry[0]] = merge(entry[1], initialObject(newObj));
       });
@@ -365,67 +298,35 @@ function App() {
 
   }, [numCandidates]);
 
-  useEffect(() => {
-    const result = {};
-    let values;
-
-    if (uploadData.length > 0) {
-      const keys = genAttributes(numAttributes, true);
-
-      uploadData.forEach((_data, idx) => {
-        result[idx + 1] = {};
-        values = Object.values(_data).map(d => attributeMapping[d.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()]);
-
-        keys.forEach((key, i) => result[idx + 1][key] = values[i]);
-      });
-
-      setTableData({
-        ...tableData,
-        objects: {
-          ...result,
-          'ideal-candidate': tableData.objects['ideal-candidate']
-        }
-      });
-
-      setUploadDataLoading(false);
-      setNumCandidates(Object.keys(result).length);
-      setShowCandidates(true);
-    }
-  }, [uploadData]);
-
-  useEffect(() => {
-    if (uploadDataLoading === false) {
-      setStep(2);
-    }
-  }, [uploadDataLoading])
-
-  const modalFooter = [
-    <Button key="ok" type="primary" onClick={() => setModalVisible(false)}>
-      Ok
-    </Button>
-  ];
-
-  if (showInfoCheckbox) {
-    modalFooter.unshift(
-      <Checkbox onChange={(e) => localStorage.setItem("showIntro", !e.target.checked)}>
-        Não mostrar mais essa mensagem
-      </Checkbox>
-    )
-  }
-
-  const handleUploadData = (data) => {
-    setUploadData(data)
-  }
-
   const handleNextMetadata = () => {
-    setStep(1);
     setActiveKeys(['2']);
-    setDisabledSteps(['3']);
   }
 
   const handleNextExpected = () => {
     setActiveKeys(['3']);
-    setDisabledSteps([]);
+  }
+
+  const uploadFile = async () => {
+    const formData = new FormData();
+    const imagefile = document.querySelector('#file');
+    formData.append("image", imagefile.files[0]);
+    const response = await axios.post('https://6bbt8vjusc.execute-api.us-east-2.amazonaws.com/json/csv', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+    })
+
+    const downloadTxtFile = (response) => {
+      const element = document.createElement("a");
+      const file = new Blob([Object.entries(response.data.body)], {
+        type: "text/plain"
+      });
+      element.href = URL.createObjectURL(file);
+      element.download = "ranking.txt";
+      document.body.appendChild(element);
+      element.click();
+    };
+    downloadTxtFile(response)
   }
 
   return (
@@ -446,33 +347,13 @@ function App() {
 
             <Title level={5} style={{ color: 'white' }}>Mérito</Title>
             <Text style={{ color: 'white' }}>Valorização das proficiências dos candidatos que são acima do que é desejado naquele aspecto.</Text>
-
-            <Divider />
-
-            <Button type="primary" onClick={() => { setModalVisible(true); setShowInfoCheckbox(false) }}>Exibir funcionamento</Button>
           </div>
         </Sider>
 
         <Content>
          <div className="App">
            <Title level={3}>Ambiente de Configuração</Title>
-            <Row style={{ marginBottom: '2%' }}>
-             <Col>
-               <Button className="rank" type="primary" onClick={handleGenManual}>Inserir candidatos</Button>
-             </Col>
-
-             <Col>
-              <Divider type="vertical" />
-              <Button className="rank" type="primary" onClick={() => handleGenSampleData(sampleData)}>Gerar exemplo</Button>
-             </Col>
-
-             <Col>
-              <Divider type="vertical" />
-              <Button className="rank" type="primary" onClick={handleGenRandomData}>Gerar candidatos aleatórios</Button>
-             </Col>
-           </Row>
-
-            <Collapse
+           <Collapse
               defaultActiveKey={['1']}
               bordered={false}
               activeKey={activeKeys}
@@ -480,7 +361,6 @@ function App() {
               expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
               className="site-collapse-custom-collapse"
             >
-             {(step >= 0 && !sample) &&
               <Panel header="Metadados" key="1" >
                 <div className="manage">
                   <Row className="step-0" gutter={8}>
@@ -489,7 +369,7 @@ function App() {
                         <InputNumber
                           style={{ marginLeft: '5px', width: '60px' }}
                           min={0}
-                          max={10}
+                          max={5}
                           defaultValue={0}
                           onChange={(value) => setNumAttributes(value)}
                         />
@@ -501,10 +381,8 @@ function App() {
                   </Row>
                 </div>
               </Panel>
-            }
 
-            {step >= 0 &&
-                <Panel header="Escalas, méritos e candidato desejado" key="2" collapsible={disabledSteps.includes("2") ? "disabled" : ""}>
+                <Panel header="Escalas, méritos e candidato desejado" key="2">
                 <Row className="step-1">
                   <Col span={24}>
                     <Table
@@ -518,53 +396,36 @@ function App() {
                   <Button className="next-button manual-button" onClick={handleNextExpected}>Próximo</Button>
                 </Row>
               </Panel>
-            }
-
-            {step >= 0 &&
-                <Panel header="Candidatos" key="3" collapsible={disabledSteps.includes("3") ? "disabled" : ""}>
-                  {!sample &&
-                    <Row>
-                      <Col span={8}>
-                        <Button className="next-button manual-button" onClick={() => setShowCandidates(true)}>Inserir manualmente</Button>
-                        <label style={{ margin: '0 2%' }}>Ou</label>
-                        <FileReader setData={handleUploadData} />
-                      </Col>
-                    </Row>
-                  }
-
-                  {showCandidates &&
-                    <>
-                      <Row className="step-1" gutter={24}>
-                        <Col className="gutter-row">
-                          <label>Quantidade de candidatos:
-                            <InputNumber
-                              style={{ marginLeft: '5px', width: '60px' }}
-                              min={0}
-                              max={10000}
-                              value={numCandidates}
-                              defaultValue={0}
-                              onChange={(value) => setNumCandidates(value)}
-                            />
-                          </label>
-                        </Col>
-                        <Col>
-                          {numCandidates > 0 &&
-														<Button type="primary" style={{ backgroundColor: '#11ab11', borderColor: '#11ab11' }} onClick={() => rankData(tableData, setRanks)}>Ranquear candidados</Button>
-                          }
-                        </Col>
-                      </Row>
-                      <Table
-                        scroll={{ y: 'calc(100vh - 10em)' }}
-                        pagination={false}
-                        className="table-striped-rows"
-                        columns={buildColumns(genAttributes(numAttributes), tableData, setTableData)}
-                        dataSource={genData(numCandidates)}
-                      />
-                    </>
-                  }
+              <Panel header="Candidatos" key="3">
+                  <Row className="step-1" gutter={24}>
+                    <Col className="gutter-row">
+                      <label>Quantidade de candidatos:
+                        <InputNumber
+                          style={{ marginLeft: '5px', width: '60px' }}
+                          min={0}
+                          max={10}
+                          value={numCandidates}
+                          defaultValue={0}
+                          onChange={(value) => setNumCandidates(value)}
+                        />
+                      </label>
+                    </Col>
+                    <Col>
+                      {numCandidates > 0 &&
+                        <Button type="primary" style={{ backgroundColor: '#11ab11', borderColor: '#11ab11' }} onClick={() => rankData(tableData, setRanks)}>Ranquear candidados</Button>
+                      }
+                    </Col>
+                  </Row>
+                  <Table
+                    scroll={{ y: 'calc(100vh - 10em)' }}
+                    pagination={false}
+                    className="table-striped-rows"
+                    columns={buildColumns(genAttributes(numAttributes), tableData, setTableData)}
+                    dataSource={genData(numCandidates)}
+                  />
                 </Panel>
-              }
             </Collapse>
+            <FileReader handleChange={uploadFile} />
           </div>
         </Content>
 
@@ -575,7 +436,7 @@ function App() {
             <Text style={{ color: 'white' }}>Interpretando o "Valor":</Text>
             <ul style={{ color: 'white' }}>
               <li><b>Entre -1 e 0:</b> proficiências dos aspectos do candidato estão abaixas das desejadas;</li>
-              <li><b>Igual à 0:</b> proficiências estão iguais às desejadas;</li>
+              <li><b>Igual a 0:</b> proficiências estão iguais às desejadas;</li>
               <li><b>Entre 0 e 1:</b> proficiências estão acima das desejadas.</li>
             </ul>
 
@@ -592,28 +453,6 @@ function App() {
           </div>
         </Sider>
       </Layout>
-
-      <Modal
-        title="Funcionamento"
-        centered
-        visible={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        footer={modalFooter}
-      >
-        <p>
-          Essa ferramenta permite que candidatos sejam ranqueados com base num candidato ideal. Este contém os níveis de proficiência desejados em cada aspecto, e os outros candidatos contêm os seus respectivos niveis de proficiência. Quanto maior o nivel de proficiência de um candidato, maior o seu valor de rank final.
-        </p>
-
-        <p>
-          Cada aspecto pode ter diferentes conjuntos de níveis de proficiências, desde o mais genérico, e.g. Não Sabe e Sabe, até o mais granular, e.g. Nada, Básico, Médio, Avançado, Expert.
-        </p>
-        <p>
-          Para cada aspecto, as proficiências dos candidatos que são acima do desejado pelo candidato ideal podem ou não ser valorizadas. A valorização é dada pela presença do mérito. Na prática, significa que caso haja mérito em um requisito, as proficiências dos candidatos que são acima do desejado serão valorizadas baseadas no seu nivel (o maior, melhor), caso contrário, não serão valorizadas, ou seja, serão consideradas fossem iguais no valor de rank final.
-        </p>
-        <p>
-          O valor final de rank de cada candidato será um agrupamento das comparações de suas proficiências com o que é desejado e o mérito.
-        </p>
-      </Modal>
     </Layout>
   );
 }
