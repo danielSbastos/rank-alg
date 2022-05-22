@@ -118,7 +118,7 @@ exports.handler = async event => {
 
     const info = getMetadata(metadata)
     const infoMetaIdeal = getIdealCandidate(idealCandidate, info[0], info[1])
-    const infoCandidates = getCandidates(candidates, info[1])
+    const infoCandidates = getCandidates(candidates, info[0], info[1])
 
     const ranks = rankData(infoMetaIdeal, infoCandidates)
 
