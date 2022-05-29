@@ -1,4 +1,4 @@
-const multipart = require("parse-multipart");
+//const multipart = require("parse-multipart");
 
 const rank = (i, j, c) => {
   let n, d;
@@ -54,11 +54,11 @@ meritos False True True True
 nivel Sabe Intermediario Intermediario Sabe
 
 @candidatos
-nivel Sabe Intermediario Avancado Sabe
-nivel Sabe Intermediario Intermediario Sabe
-nivel Sabe Basico Avancado Sabe
-nivel Sabe Intermediario Avancado NaoSabe
-nivel Sabe Basico Avancado NaoSabe
+1) nivel Sabe Intermediario Avancado Sabe
+2) nivel Sabe Basico Avancado Sabe
+3) nivel Sabe Intermediario Avancado NaoSabe
+4) nivel Sabe Intermediario Intermediario Sabe
+5) nivel Sabe Basico Avancado NaoSabe
 `
 
 function removeEmpt (arr) { return arr.filter(element => {
@@ -92,7 +92,7 @@ function getCandidates(candidates, metadata, n) {
     let cands = []
     let hash
     candidates.forEach(candidate => {
-      let values = candidate.replace('nivel ', '').split(' ')
+      let values = candidate.replace(/.*nivel /, '').split(' ')
       let hash = {}
       for (let i = 0; i < n; i++) {
         let scaleKey = metadata[''+(i + 1)].n
@@ -128,7 +128,9 @@ exports.handler = async event => {
     idealCandidate.splice(0, 0, '@candidatoDesejado')
     idealCandidate = idealCandidate.join('\n')
 
-    candidates = ranks.map((rank, idx) => candidates[idx] + (' => ' + rank))
+    candidates = ranks.map((rank, idx) => [rank, candidates[idx]])
+    candidates.sort((a, b) => a[0] < b[0])
+    candidates = candidates.map((c) => c[1] + " ==> " + c[0])
     candidates.splice(0, 0, '@candidates')
     candidates = candidates.join('\n')
 

@@ -1,14 +1,14 @@
 @metadados
 numAspectos 4
-niveisPorAspecto 2 3 4 2
-meritos False True True True
+niveisPorAspecto 2 4 4 4
+meritos False False False False 
 
 @candidatoDesejado
-nivel Sabe Intermediario Intermediario Sabe
+nivel Sabe Intermediario Intermediario Intermediario
 
 @candidatos
-nivel Sabe Intermediario Avancado Sabe
-nivel Sabe Intermediario Intermediario Sabe
-nivel Sabe Basico Avancado Sabe
-nivel Sabe Intermediario Avancado NaoSabe
-nivel Sabe Basico Avancado NaoSabe
+nivel Sabe Basico Intermediario Intermediario
+nivel Sabe Intermediario Intermediario Avancado
+nivel Sabe Avancado Intermediario Avancado
+nivel Sabe Avancado Avancado Avancado
+nivel NaoSabe Avancado Avancado Avancado
