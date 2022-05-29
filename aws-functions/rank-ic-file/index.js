@@ -1,4 +1,4 @@
-//const multipart = require("parse-multipart");
+const multipart = require("parse-multipart");
 
 const rank = (i, j, c) => {
   let n, d;
@@ -129,7 +129,7 @@ exports.handler = async event => {
     idealCandidate = idealCandidate.join('\n')
 
     candidates = ranks.map((rank, idx) => [rank, candidates[idx]])
-    candidates.sort((a, b) => a[0] < b[0])
+    candidates.sort((a, b) => b[0] - a[0])
     candidates = candidates.map((c) => c[1] + " ==> " + c[0])
     candidates.splice(0, 0, '@candidates')
     candidates = candidates.join('\n')
